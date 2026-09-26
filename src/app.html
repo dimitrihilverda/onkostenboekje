@@ -1,0 +1,2677 @@
+<title>Onkostenboekje</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&display=swap">
+<style>
+:root{
+  --page:#D5D9CE;
+  --case:#3B413B;
+  --case-hi:#565D56;
+  --case-edge:#262A26;
+  --case-ink:#8E978C;
+  --lcd:#C4CEB3;
+  --lcd-hi:#CED7BE;
+  --ink:#1B2216;
+  --ink-2:#4A5641;
+  --ink-3:#8A967D;
+  --grid:rgba(27,34,22,.045);
+  --hover:rgba(27,34,22,.08);
+  --glow:none;
+  --ui:"Pixelify Sans","Trebuchet MS",system-ui,sans-serif;
+  --data:"VT323",ui-monospace,"Courier New",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --page:#0B100D;
+    --case:#171C19;
+    --case-hi:#242B26;
+    --case-edge:#050706;
+    --case-ink:#4B564E;
+    --lcd:#0F2118;
+    --lcd-hi:#132A1F;
+    --ink:#9EEBAE;
+    --ink-2:#64AC76;
+    --ink-3:#33603F;
+    --grid:rgba(158,235,174,.035);
+    --hover:rgba(158,235,174,.09);
+    --glow:0 0 6px rgba(120,255,160,.33);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --page:#0B100D;
+  --case:#171C19;
+  --case-hi:#242B26;
+  --case-edge:#050706;
+  --case-ink:#4B564E;
+  --lcd:#0F2118;
+  --lcd-hi:#132A1F;
+  --ink:#9EEBAE;
+  --ink-2:#64AC76;
+  --ink-3:#33603F;
+  --grid:rgba(158,235,174,.035);
+  --hover:rgba(158,235,174,.09);
+  --glow:0 0 6px rgba(120,255,160,.33);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--ui)}
+button,input,select,textarea{font:inherit;color:inherit}
+:where(button,select,input,textarea):focus-visible{outline:2px dotted var(--ink);outline-offset:2px}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---- device ---- */
+.stage{height:100%;padding-block:16px;padding-inline:16px;display:flex;justify-content:center;align-items:center}
+.device{width:100%;max-width:440px;height:100%;max-height:860px;display:flex;flex-direction:column}
+.case-label{display:none;text-align:center;font:600 11px/1 var(--ui);letter-spacing:.32em;text-transform:uppercase;color:var(--case-ink);padding-top:16px}
+@media (min-width:560px) and (min-height:600px){
+  .stage{padding-block:28px}
+  .device{max-width:470px;background:linear-gradient(165deg,var(--case-hi),var(--case) 55%);border-radius:34px 34px 46px 46px;padding:22px 20px 18px;box-shadow:0 0 0 1px var(--case-edge),0 1px 0 1px var(--case-hi) inset,0 22px 44px -20px rgba(0,0,0,.6)}
+  .case-label{display:block}
+}
+.screen{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;padding:8px 10px 10px;border-radius:8px;background-color:var(--lcd);background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px),linear-gradient(to bottom,var(--grid) 1px,transparent 1px);background-size:3px 3px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.22),inset 0 4px 12px rgba(0,0,0,.16);text-shadow:var(--glow)}
+
+/* ---- title bar ---- */
+.titlebar{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;border-bottom:2px solid var(--ink);min-height:32px}
+.tab{display:inline-flex;align-items:center;gap:8px;font:700 16px/1 var(--ui);background:var(--ink);color:var(--lcd);border:0;border-radius:6px 6px 0 0;padding:7px 11px 6px 12px;cursor:pointer;text-shadow:none}
+.tab::after{content:"";width:8px;height:5px;background:currentColor;clip-path:polygon(0 0,100% 0,50% 100%)}
+.titlebar .popup{margin-bottom:3px;margin-left:auto;flex:0 1 auto;min-width:0;max-width:42%}
+.titlebar .popup select{width:100%}
+
+/* ---- popup triggers (select) ---- */
+.popup{display:inline-flex;align-items:center;gap:5px;min-width:0;cursor:pointer}
+.popup::before{content:"";flex:none;width:9px;height:5px;background:currentColor;clip-path:polygon(0 0,100% 0,50% 100%)}
+.popup select{appearance:none;-webkit-appearance:none;background:transparent;border:0;border-radius:0;font:20px/1.1 var(--data);padding:2px 2px;min-width:0;max-width:100%;text-overflow:ellipsis;cursor:pointer}
+.popup select option{background:var(--lcd-hi);color:var(--ink)}
+
+/* ---- period ---- */
+.period{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0 4px}
+.push{display:inline-flex}
+.push button{font:600 14px/1 var(--ui);background:transparent;border:1.5px solid var(--ink);padding:7px 10px;min-height:32px;cursor:pointer;margin-left:-1.5px}
+.push button:first-child{margin-left:0}
+.push button:hover{background:var(--hover)}
+.push button[aria-pressed="true"]{background:var(--ink);color:var(--lcd);text-shadow:none}
+.stepper{display:inline-flex;align-items:center;margin-left:auto}
+.arrow{width:32px;height:32px;display:grid;place-items:center;background:transparent;border:0;cursor:pointer;border-radius:4px}
+.arrow:hover{background:var(--hover)}
+.plabel{font:22px/1 var(--data);background:transparent;border:0;padding:4px 2px;cursor:pointer;min-width:4.6em;text-align:center;font-variant-numeric:tabular-nums}
+
+/* ---- notices ---- */
+.notice{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1.5px dashed var(--ink-2);padding:6px 8px;margin:4px 0;font:14px/1.35 var(--ui)}
+.notice .btn{min-height:28px;padding:0 10px;font-size:14px;flex:none}
+
+/* ---- list ---- */
+.list{list-style:none;margin:0;padding:2px 0;flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+.row{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;gap:8px;align-items:baseline;width:100%;background:transparent;border:0;font:21px/1 var(--data);padding:7px 6px;text-align:left;cursor:pointer;border-radius:2px;font-variant-numeric:tabular-nums}
+.row:hover{background:var(--hover)}
+.row:active,.row.sel{background:var(--ink);color:var(--lcd);text-shadow:none}
+.row .d{white-space:nowrap}
+.row .s{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .meta{opacity:.75}
+.row .a{text-align:right;white-space:nowrap}
+.vb{display:inline-block;font:600 10px/1 var(--ui);letter-spacing:.08em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:2px 3px 1px;margin-left:7px;vertical-align:3px}
+.grp{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:12px 6px 3px;border-bottom:1px dotted var(--ink-3);font:600 12px/1 var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.grp span:last-child{font:18px/1 var(--data);letter-spacing:0;text-transform:none}
+.empty{padding:34px 12px;text-align:center;font:15px/1.5 var(--ui);color:var(--ink-2);text-wrap:balance}
+
+/* ---- totals + buttons ---- */
+.totals{display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap;border-top:1.5px dotted var(--ink-2);padding:7px 4px 0;margin-top:4px}
+.totals .lbl{font:600 14px/1 var(--ui);color:var(--ink-2)}
+.totals .sum{font:23px/1 var(--data);text-align:right;margin-left:auto;font-variant-numeric:tabular-nums}
+.bar{display:flex;gap:6px;flex-wrap:wrap;padding-top:10px}
+.bar .btn{flex:1 1 auto;padding:0 10px}
+.btn{font:600 15px/1 var(--ui);background:transparent;border:1.5px solid var(--ink);border-radius:10px;min-height:34px;padding:0 14px;cursor:pointer}
+.btn:hover{background:var(--hover)}
+.btn:active{background:var(--ink);color:var(--lcd);text-shadow:none}
+.btn:disabled{opacity:.45;cursor:default;background:transparent;color:var(--ink)}
+
+/* ---- menu ---- */
+.menu{position:absolute;top:40px;left:10px;z-index:5;min-width:230px;background:var(--lcd-hi);border:2px solid var(--ink);box-shadow:3px 3px 0 rgba(0,0,0,.3);padding:4px 0}
+.mi{display:flex;justify-content:space-between;align-items:baseline;gap:28px;width:100%;background:transparent;border:0;padding:8px 12px;font:600 15px/1 var(--ui);text-align:left;cursor:pointer}
+.mi:hover,.mi:focus-visible{background:var(--ink);color:var(--lcd-hi);outline:0;text-shadow:none}
+.mi .sc{font:19px/1 var(--data)}
+.menu hr{border:0;border-top:1.5px dashed var(--ink-2);margin:4px 8px}
+
+/* ---- dialogs ---- */
+dialog.palm{padding:0;border:2px solid var(--ink);border-radius:7px 7px 4px 4px;background:var(--lcd-hi);color:var(--ink);width:min(400px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto;box-shadow:3px 3px 0 rgba(0,0,0,.35);text-shadow:var(--glow)}
+dialog.palm::backdrop{background:rgba(16,22,14,.4)}
+.dlg-title{margin:0;background:var(--ink);color:var(--lcd-hi);font:700 16px/1 var(--ui);text-align:center;padding:6px 10px 5px;text-shadow:none;position:sticky;top:0;z-index:1}
+.dlg-body{padding:14px 14px 6px}
+.dlg-body p{margin:0 0 10px;font:15px/1.45 var(--ui)}
+.dlg-buttons{display:flex;gap:8px;flex-wrap:wrap;padding:6px 14px 14px}
+.hint{color:var(--ink-2);font-size:13.5px!important}
+.err:empty,.ok:empty{display:none}
+.err{background:var(--ink);color:var(--lcd-hi);padding:6px 8px;border-radius:3px;font-weight:600!important;text-shadow:none}
+.ok{color:var(--ink-2)}
+
+.fields{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 10px;align-items:baseline;margin-bottom:12px}
+.f{display:contents}
+.fields label,.fields .lab{font:700 15px/1.2 var(--ui);text-align:right;white-space:nowrap}
+.fields input,.fields textarea,.catlist input{width:100%;min-width:0;font:21px/1.1 var(--data);background:transparent;border:0;border-bottom:1.5px dotted var(--ink-2);border-radius:0;padding:2px 2px}
+.fields textarea{resize:vertical;border:1.5px dotted var(--ink-2);padding:4px 6px;min-height:3.4em}
+.fields input::placeholder,.fields textarea::placeholder{color:var(--ink-3);opacity:1}
+.fields input[type="date"]{padding-block:0}
+.fields .popup{width:100%}
+.fields .popup select{flex:1}
+.inl{display:flex;align-items:baseline;gap:8px;font:15px var(--ui)}
+.inl input{flex:1}
+.calc{grid-column:2;font:19px/1.2 var(--data)!important;color:var(--ink-2);margin:-2px 0 0!important}
+
+.alert{display:flex;gap:12px;align-items:flex-start}
+.ico{flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--lcd-hi);display:grid;place-items:center;font:700 18px/1 var(--ui);text-shadow:none}
+
+.sub{font:19px/1.2 var(--data)!important;color:var(--ink-2)}
+.bars{list-style:none;margin:12px 0;padding:0;display:grid;gap:8px}
+.bars li{display:grid;grid-template-columns:minmax(0,7.6em) minmax(40px,1fr) auto;gap:8px;align-items:center}
+.bars .l{font:19px/1 var(--data);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bars .t{height:12px;border:1.5px solid var(--ink);position:relative}
+.bars .t i{position:absolute;inset:0 auto 0 0;background:repeating-conic-gradient(var(--ink) 0 25%,transparent 0 50%) 0 0/2px 2px}
+.bars .a{font:19px/1 var(--data);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bars .none{display:block;font:15px/1.45 var(--ui);color:var(--ink-2)}
+.grand{display:flex;justify-content:space-between;align-items:baseline;border-top:1.5px solid var(--ink);padding-top:7px;font-weight:700!important}
+.grand span:last-child{font:23px/1 var(--data)}
+
+.catlist{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.catlist li{display:flex;gap:8px;align-items:center}
+.catlist input{flex:1}
+.x{flex:none;width:32px;height:32px;border:1.5px solid var(--ink);border-radius:8px;background:transparent;font:700 18px/1 var(--ui);cursor:pointer}
+.x:hover{background:var(--hover)}
+.x-pl{flex:none;width:32px}
+
+.filebtn{display:inline-flex;align-items:center}
+#impFile:focus-visible + .filebtn{outline:2px dotted var(--ink);outline-offset:2px}
+.drop{border:1.5px dashed var(--ink-2);padding:14px 12px;margin-bottom:12px;display:grid;gap:10px;justify-items:start}
+.drop.over{background:var(--hover)}
+.drop p{margin:0!important}
+details.help{margin-bottom:10px}
+details.help summary{cursor:pointer;font:600 15px/1.4 var(--ui)}
+details.help ol{margin:8px 0 0;padding-left:1.3em;display:grid;gap:8px;font:14px/1.45 var(--ui)}
+details.help code{font:17px/1 var(--data);word-break:break-all}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:0 0 12px;font:15px/1.35 var(--ui)}
+.kv dt{font-weight:700;text-align:right;white-space:nowrap}
+.kv dd{margin:0}
+.kop2{font:700 15px/1.2 var(--ui)!important;margin:4px 0 6px!important}
+.maprow{display:grid;gap:4px;padding:7px 0;border-top:1px dotted var(--ink-3)}
+.maprow .wat{font:15px/1.3 var(--ui)}
+.maprow .vb2{display:block;font:17px/1.2 var(--data);color:var(--ink-2)}
+.maprow .popup{justify-self:start}
+.kmrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:6px 0 10px;font:15px var(--ui)}
+.kmrow input{width:4.5em;font:21px/1.1 var(--data);background:transparent;border:0;border-bottom:1.5px dotted var(--ink-2);padding:2px}
+.meter{height:14px;border:1.5px solid var(--ink);position:relative;margin:4px 0 12px}
+.meter i{position:absolute;inset:0 auto 0 0;width:0;background:repeating-conic-gradient(var(--ink) 0 25%,transparent 0 50%) 0 0/2px 2px}
+#expText{width:100%;font:16px/1.25 var(--data);background:transparent;border:1.5px dotted var(--ink-2);padding:6px;margin-bottom:10px;resize:vertical}
+
+/* ---- Plus ---- */
+.row{grid-template-columns:max-content 24px minmax(0,1fr) auto}
+.row svg{align-self:center}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px}
+.tile{display:grid;justify-items:center;align-content:start;gap:6px;padding:10px 4px 8px;background:transparent;border:1.5px solid var(--ink-3);border-radius:8px;cursor:pointer;font:600 12px/1.15 var(--ui);text-align:center;min-height:78px}
+.tile span{max-width:100%;overflow-wrap:anywhere;hyphens:auto}
+.tile:hover{border-color:var(--ink);background:var(--hover)}
+.tile:active{background:var(--ink);color:var(--lcd-hi);text-shadow:none}
+.chk{display:inline-flex;align-items:center;gap:8px;font:15px/1.2 var(--ui)!important;text-align:left!important;cursor:pointer;white-space:normal!important}
+.chk input{appearance:none;-webkit-appearance:none;flex:none;width:18px;height:18px;border:1.5px solid var(--ink);border-radius:2px;margin:0;display:grid;place-items:center;background:transparent;cursor:pointer;padding:0}
+.chk input:checked::after{content:"";width:12px;height:10px;background:var(--ink);clip-path:polygon(0 55%,16% 40%,40% 64%,84% 8%,100% 22%,40% 96%)}
+.inl input.kort{flex:0 1 6em;width:6em}
+dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
+.dlg-body > .push{margin-bottom:12px;flex-wrap:wrap}
+.weekkop{display:flex;align-items:center;gap:6px;margin-bottom:6px;font:20px/1 var(--data)}
+.tw{overflow-x:auto;margin:0 0 10px}
+.rt{border-collapse:collapse;width:100%;font:18px/1.15 var(--data);font-variant-numeric:tabular-nums}
+.rt th{font:600 11px/1.2 var(--ui);letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:4px 6px;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+.rt td{padding:4px 6px;border-bottom:1px dotted var(--ink-3);vertical-align:top}
+.rt .n{text-align:right;white-space:nowrap}
+.rt tfoot td{border-bottom:0;border-top:1.5px solid var(--ink);font-weight:700}
+.rt .klein{display:block;font-size:15px;color:var(--ink-2)}
+.rt .n .klein{white-space:normal}
+.rt th,.rt td{padding-inline:4px}
+.rt .leeg{font:15px/1.4 var(--ui);color:var(--ink-2);padding:14px 6px}
+.srt{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.srt li{display:flex;gap:8px;align-items:center}
+.srt li > svg{flex:none}
+.srt input:not([type="checkbox"]){flex:1;min-width:0;font:21px/1.1 var(--data);background:transparent;border:0;border-bottom:1.5px dotted var(--ink-2);padding:2px}
+.srt .popup select{max-width:8.5em}
+.srt.std{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 12px}
+.onb{border:1.5px dashed var(--ink-2);padding:8px 10px;display:grid;gap:8px;justify-items:start;font:14px/1.4 var(--ui)}
+.onblist{margin:0 0 10px;padding-left:1.2em;font:17px/1.3 var(--data)}
+/* ---- budget ---- */
+.tabs{display:flex;align-items:flex-end;gap:4px;flex:none}
+.tab.uit{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink);text-shadow:inherit}
+.tab.uit::after{display:none}
+.budscherm{flex:1;min-height:0;display:flex;flex-direction:column}
+.snel{display:grid;gap:6px;border:1.5px solid var(--ink);border-radius:6px;padding:8px;margin:4px 0 6px;background:var(--hover)}
+.snel .kop2{margin:0!important;font-size:13px!important;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.snel-r,.bud-in .r{display:flex;gap:8px;align-items:center;min-width:0}
+.snel input,.bud-in input{min-width:0;font:21px/1.1 var(--data);background:transparent;border:0;border-bottom:1.5px dotted var(--ink-2);border-radius:0;padding:2px}
+.snel input::placeholder,.bud-in input::placeholder{color:var(--ink-3);opacity:1}
+.snel .bedr,.bud-in .bedr{width:5.2em;flex:none}
+.snel .popup{flex:1;min-width:0}
+.snel .popup select{width:100%}
+.snel .noti,.bud-in .noti{flex:1}
+.snel .err,.bud-in .err{margin:0!important;font:600 14px/1.3 var(--ui)}
+.push.teken button{min-width:34px;font:700 18px/1 var(--ui);padding:5px 8px}
+.budstatus{display:flex;gap:8px;align-items:center;justify-content:space-between;font:14px/1.3 var(--ui);padding:2px 2px 6px}
+.budstatus .btn{min-height:28px;font-size:13px;padding:0 10px;flex:none}
+.bud{border-bottom:1px dotted var(--ink-3);padding:6px 0 9px}
+.bud-kop{display:flex;align-items:center;gap:8px}
+.bud-naam{flex:1;min-width:0;display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;row-gap:2px;align-items:center;background:transparent;border:0;text-align:left;cursor:pointer;padding:4px;border-radius:4px}
+.bud-naam:hover{background:var(--hover)}
+.bud-naam svg{grid-row:span 2}
+.bud-t{font:21px/1.05 var(--data);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bud-sub{font:13px/1.25 var(--ui);color:var(--ink-2)}
+.bud-over{flex:none;font:22px/1 var(--data);background:transparent;border:1.5px solid var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer;min-width:5.6em;text-align:right;font-variant-numeric:tabular-nums}
+.bud-over:hover{background:var(--hover)}
+.bud-over.tekort{background:var(--ink);color:var(--lcd);text-shadow:none}
+.bud-balk{height:8px;border:1.5px solid var(--ink);margin:4px 4px 0 36px;position:relative}
+.bud-balk i{position:absolute;inset:0 auto 0 0;background:repeating-conic-gradient(var(--ink) 0 25%,transparent 0 50%) 0 0/2px 2px}
+.bud-balk.vol i{background:var(--ink)}
+.bud-in{display:grid;gap:6px;margin:8px 0 2px 36px;padding:8px;border:1.5px dashed var(--ink-2)}
+.bud-hist{list-style:none;margin:6px 0 0 36px;padding:0;display:grid;gap:1px}
+.bud-hist button{display:grid;grid-template-columns:max-content minmax(0,1fr) auto;gap:8px;width:100%;background:transparent;border:0;text-align:left;font:18px/1.1 var(--data);padding:4px;cursor:pointer;border-radius:3px;font-variant-numeric:tabular-nums}
+.bud-hist button:hover{background:var(--hover)}
+.bud-hist .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bud-hist .leeg{font:14px/1.4 var(--ui);color:var(--ink-2);padding:4px}
+.budedit{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:10px}
+.budedit li{border:1.5px solid var(--ink-3);border-radius:6px;padding:8px;display:grid;gap:8px}
+.budedit .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:15px var(--ui)}
+.budedit input:not([type="checkbox"]){min-width:0;font:21px/1.1 var(--data);background:transparent;border:0;border-bottom:1.5px dotted var(--ink-2);border-radius:0;padding:2px}
+.budedit .naam{flex:1 1 7em}
+.budedit .bedr{flex:0 1 5.5em;width:5.5em}
+.budedit .popup select{max-width:12em}
+.rt tr.klik{cursor:pointer}
+.rt tr.klik:hover td{background:var(--hover)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="stage">
+  <div class="device">
+    <main class="screen" id="screen">
+      <header class="titlebar">
+        <div class="tabs">
+          <button type="button" class="tab" id="tabPosten" data-scherm="posten">Onkosten</button>
+          <button type="button" class="tab uit" id="tabBudget" data-scherm="budget">Budget</button>
+        </div>
+        <label class="popup" id="catPop" for="catFilter"><span class="sr">Categorie</span><select id="catFilter"></select></label>
+      </header>
+      <div class="menu" id="menu" role="menu" aria-label="Menu" hidden></div>
+
+      <div class="period">
+        <div class="push" id="modeGroup" role="group" aria-label="Periode">
+          <button type="button" data-mode="maand" aria-pressed="true">Maand</button>
+          <button type="button" data-mode="jaar" aria-pressed="false">Jaar</button>
+          <button type="button" data-mode="alles" aria-pressed="false">Alles</button>
+        </div>
+        <div class="stepper" id="stepper">
+          <button type="button" class="arrow" id="prev" aria-label="Vorige periode"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" shape-rendering="crispEdges"><path d="M10 0 0 6l10 6z" fill="currentColor"/></svg></button>
+          <button type="button" class="plabel" id="plabel" title="Terug naar vandaag">sep 2026</button>
+          <button type="button" class="arrow" id="next" aria-label="Volgende periode"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 0l10 6-10 6z" fill="currentColor"/></svg></button>
+        </div>
+      </div>
+
+      <div id="notices"></div>
+      <ol class="list" id="list" aria-label="Posten"></ol>
+      <div class="budscherm" id="budScherm" hidden>
+        <form class="snel" id="snelAf" novalidate>
+          <p class="kop2">Snel afboeken</p>
+          <div class="snel-r">
+            <div class="push teken" role="group" aria-label="Afboeken of bijstorten"><button type="button" data-teken="af" aria-pressed="true" aria-label="Afboeken">−</button><button type="button" data-teken="bij" aria-pressed="false" aria-label="Bijstorten">+</button></div>
+            <input id="snelBedrag" class="bedr" inputmode="decimal" autocomplete="off" placeholder="25,00" aria-label="Bedrag">
+            <span class="popup"><select id="snelBudget" aria-label="Van welk budget"></select></span>
+          </div>
+          <div class="snel-r">
+            <input id="snelNotitie" class="noti" maxlength="80" autocomplete="off" placeholder="Waarvoor? Bijv. autowassen" aria-label="Waarvoor">
+            <button type="submit" class="btn">OK</button>
+          </div>
+          <p class="err" id="snelErr" role="alert"></p>
+        </form>
+        <div class="budstatus" id="budStatus" role="status" hidden><span id="budStatusTekst"></span><button type="button" class="btn" id="budUndo">Ongedaan maken</button></div>
+        <ol class="list" id="budList" aria-label="Budgetten"></ol>
+      </div>
+
+      <div class="totals" aria-live="polite"><span class="lbl" id="count">&nbsp;</span><span class="sum" id="sum"></span></div>
+      <div class="bar" id="barBudget" hidden>
+        <button type="button" class="btn" id="btnBudNieuw">Nieuw budget</button>
+        <button type="button" class="btn" id="btnBudEdit">Budgetten…</button>
+        <button type="button" class="btn" id="btnHist">Historie</button>
+      </div>
+      <div class="bar" id="barPosten">
+        <button type="button" class="btn" id="btnNew">Nieuw</button>
+        <button type="button" class="btn" id="btnOv">Overzicht</button>
+        <button type="button" class="btn" id="btnRap">Rapport…</button>
+        <button type="button" class="btn" id="btnExp">Export…</button>
+      </div>
+    </main>
+    <div class="case-label" aria-hidden="true">Onkostenboekje Plus</div>
+  </div>
+</div>
+
+<dialog class="palm" id="dlgSnel" aria-labelledby="snelTitle">
+  <h2 class="dlg-title" id="snelTitle">Nieuwe post</h2>
+  <div class="dlg-body"><div class="tiles" id="snelTegels" lang="nl"></div></div>
+  <div class="dlg-buttons">
+    <button type="button" class="btn" id="snelForm">Formulier</button>
+    <button type="button" class="btn" data-close>Annuleren</button>
+  </div>
+</dialog>
+
+<dialog class="palm" id="dlgPost" aria-labelledby="postTitle">
+  <form id="formPost" novalidate>
+    <h2 class="dlg-title" id="postTitle">Details</h2>
+    <div class="dlg-body">
+      <div class="fields">
+        <div class="f"><label for="fDatum">Datum:</label><input type="date" id="fDatum" required></div>
+        <div class="f"><label for="fSoort">Soort:</label><span class="popup"><select id="fSoort"></select></span></div>
+        <div class="f" id="rowBedrag"><label for="fBedrag">Bedrag:</label><input id="fBedrag" inputmode="decimal" autocomplete="off" placeholder="0,00"></div>
+        <div class="f" id="rowValuta"><label for="fValuta">Valuta:</label><span class="popup"><select id="fValuta"></select></span></div>
+        <div class="f" id="rowKoers" hidden><label for="fKoers">Koers:</label><span class="inl">1 <span id="kVan">USD</span> = <input id="fKoers" class="kort" inputmode="decimal" autocomplete="off" placeholder="0,00"> <span id="kNaar">EUR</span></span></div>
+        <p class="calc" id="koersCalc" hidden></p>
+        <div class="f" id="rowStanden" hidden><label for="fBegin">Standen:</label><span class="inl"><input id="fBegin" class="kort" inputmode="decimal" autocomplete="off" placeholder="begin" aria-label="Beginstand"> – <input id="fEind" class="kort" inputmode="decimal" autocomplete="off" placeholder="eind" aria-label="Eindstand"></span></div>
+        <div class="f" id="rowAfstand" hidden><label for="fAfstand">Afstand:</label><span class="inl"><input id="fAfstand" inputmode="decimal" autocomplete="off" placeholder="0"> km</span></div>
+        <p class="calc" id="kmCalc" hidden></p>
+        <div class="f"><label for="fBetaling">Betaling:</label><span class="popup"><select id="fBetaling"></select></span></div>
+        <div class="f"><label for="fCat">Categorie:</label><span class="popup"><select id="fCat"></select></span></div>
+        <div class="f" id="rowBudget"><label for="fBudget">Budget:</label><span class="popup"><select id="fBudget"></select></span></div>
+        <div class="f"><span class="lab">Bon:</span><label class="chk"><input type="checkbox" id="fBon"><span>Bonnetje bewaard</span></label></div>
+        <div class="f"><label for="fStatus">Status:</label><span class="popup"><select id="fStatus"></select></span></div>
+        <div class="f"><label for="fLev">Leverancier:</label><input id="fLev" maxlength="80" autocomplete="off"></div>
+        <div class="f"><label for="fPlaats">Plaats:</label><input id="fPlaats" maxlength="60" autocomplete="off"></div>
+        <div class="f"><label for="fDeeln">Deelnemers:</label><input id="fDeeln" maxlength="120" autocomplete="off"></div>
+        <div class="f"><label for="fNotitie">Notitie:</label><textarea id="fNotitie" rows="2" maxlength="4096"></textarea></div>
+      </div>
+      <p class="err" id="postErr" role="alert"></p>
+    </div>
+    <div class="dlg-buttons">
+      <button type="submit" class="btn" id="postOk">OK</button>
+      <button type="button" class="btn" data-close>Annuleren</button>
+      <button type="button" class="btn" id="btnDel">Verwijder…</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="palm" id="dlgOv" aria-labelledby="ovTitle">
+  <h2 class="dlg-title" id="ovTitle">Overzicht</h2>
+  <div class="dlg-body">
+    <p class="sub" id="ovSub"></p>
+    <div class="push" role="group" aria-label="Indeling">
+      <button type="button" data-ov="soort" aria-pressed="true">Per soort</button>
+      <button type="button" data-ov="cat" aria-pressed="false">Per categorie</button>
+    </div>
+    <ul class="bars" id="ovBars"></ul>
+    <p class="grand"><span>Totaal</span><span id="ovTotal"></span></p>
+    <p class="hint" id="ovStatus"></p>
+    <p class="hint" id="ovOther" hidden></p>
+  </div>
+  <div class="dlg-buttons"><button type="button" class="btn" data-close>Klaar</button></div>
+</dialog>
+
+<dialog class="palm wide" id="dlgRap" aria-labelledby="rapTitle">
+  <h2 class="dlg-title" id="rapTitle">Rapport</h2>
+  <div class="dlg-body">
+    <div class="push" role="group" aria-label="Soort rapport">
+      <button type="button" data-tab="declaratie">Declaratie</button>
+      <button type="button" data-tab="week">Weekstaat</button>
+      <button type="button" data-tab="ritten">Rittenstaat</button>
+    </div>
+    <div class="weekkop" id="rapWeek" hidden>
+      <button type="button" class="arrow" id="rapPrev" aria-label="Vorige week"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" shape-rendering="crispEdges"><path d="M10 0 0 6l10 6z" fill="currentColor"/></svg></button>
+      <span id="rapWeekLabel"></span>
+      <button type="button" class="arrow" id="rapNext" aria-label="Volgende week"><svg width="10" height="12" viewBox="0 0 10 12" aria-hidden="true" shape-rendering="crispEdges"><path d="M0 0l10 6-10 6z" fill="currentColor"/></svg></button>
+    </div>
+    <p class="sub" id="rapSub"></p>
+    <div class="tw"><table class="rt" id="rapTabel"></table></div>
+    <p class="hint" id="rapNoot"></p>
+    <p class="err" id="rapErr" role="alert"></p>
+    <p class="ok" id="rapOk" role="status"></p>
+  </div>
+  <div class="dlg-buttons">
+    <button type="button" class="btn" id="rapGedecl">Markeer als gedeclareerd</button>
+    <button type="button" class="btn" id="rapVergoed">Markeer als vergoed</button>
+    <button type="button" class="btn" id="rapSave">Download CSV</button>
+    <button type="button" class="btn" id="rapCopy">Kopieer</button>
+    <button type="button" class="btn" data-close>Sluiten</button>
+  </div>
+</dialog>
+
+<dialog class="palm" id="dlgExp" aria-labelledby="expTitle">
+  <h2 class="dlg-title" id="expTitle">Exporteren</h2>
+  <div class="dlg-body">
+    <p id="expMsg"></p>
+    <p class="hint">Download geeft een CSV-bestand dat Excel en Numbers direct openen. Kopieer plakt de posten als tabel in een spreadsheet.</p>
+    <textarea id="expText" rows="6" readonly hidden aria-label="Posten als tabeltekst"></textarea>
+    <p class="err" id="expErr" role="alert"></p>
+    <p class="ok" id="expOk" role="status"></p>
+  </div>
+  <div class="dlg-buttons">
+    <button type="button" class="btn" id="expSave">Download CSV</button>
+    <button type="button" class="btn" id="expCopy">Kopieer</button>
+    <button type="button" class="btn" data-close>Sluiten</button>
+  </div>
+</dialog>
+
+<dialog class="palm" id="dlgPref" aria-labelledby="prefTitle">
+  <form id="formPref" novalidate>
+    <h2 class="dlg-title" id="prefTitle">Voorkeuren</h2>
+    <div class="dlg-body">
+      <div class="fields">
+        <div class="f"><span class="lab" id="nieuwLab">Nieuw opent:</span><div class="push" role="group" aria-labelledby="nieuwLab"><button type="button" data-nieuw="iconen">Icoontjes</button><button type="button" data-nieuw="formulier">Formulier</button></div></div>
+        <div class="f"><span class="lab" id="sortLab">Sorteer op:</span><div class="push" role="group" aria-labelledby="sortLab"><button type="button" data-sort="datum">Datum</button><button type="button" data-sort="soort">Soort</button></div></div>
+        <div class="f"><label for="pValuta">Valuta:</label><span class="popup"><select id="pValuta"></select></span></div>
+        <div class="f"><label for="pKm">Km-tarief:</label><span class="inl"><input id="pKm" inputmode="decimal" autocomplete="off"> per km</span></div>
+      </div>
+      <p class="hint">Het km-tarief geldt voor nieuwe ritten. Ritten die je al hebt genoteerd houden hun eigen tarief. Bij Valuta kies je je eigen munt; bedragen in een andere valuta tellen mee zodra ze een koers hebben.</p>
+      <p class="err" id="prefErr" role="alert"></p>
+    </div>
+    <div class="dlg-buttons">
+      <button type="submit" class="btn">OK</button>
+      <button type="button" class="btn" data-close>Annuleren</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="palm" id="dlgCat" aria-labelledby="catTitle">
+  <form id="formCat" novalidate>
+    <h2 class="dlg-title" id="catTitle">Bewerk categorieën</h2>
+    <div class="dlg-body">
+      <ul class="catlist" id="catList"></ul>
+      <p class="hint" id="catCount"></p>
+      <p class="err" id="catErr" role="alert"></p>
+    </div>
+    <div class="dlg-buttons">
+      <button type="submit" class="btn">OK</button>
+      <button type="button" class="btn" id="catNew">Nieuw</button>
+      <button type="button" class="btn" data-close>Annuleren</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="palm wide" id="dlgSrt" aria-labelledby="srtTitle">
+  <form id="formSrt" novalidate>
+    <h2 class="dlg-title" id="srtTitle">Bewerk soorten</h2>
+    <div class="dlg-body">
+      <p class="kop2">Eigen soorten</p>
+      <ul class="srt" id="srtEigen"></ul>
+      <p><button type="button" class="btn" id="srtNieuw">Nieuwe soort</button></p>
+      <p class="kop2">Standaardsoorten</p>
+      <p class="hint">Haal het vinkje weg bij soorten die je nooit gebruikt; die verdwijnen dan uit de keuzelijst en de icoontjes.</p>
+      <ul class="srt std" id="srtStd"></ul>
+      <p class="err" id="srtErr" role="alert"></p>
+    </div>
+    <div class="dlg-buttons">
+      <button type="submit" class="btn">OK</button>
+      <button type="button" class="btn" data-close>Annuleren</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="palm" id="dlgImp" aria-labelledby="impTitle">
+  <h2 class="dlg-title" id="impTitle">Importeren</h2>
+  <div class="dlg-body" id="impKies">
+    <div class="drop" id="impDrop">
+      <p>Kies de bestanden van je Palm (<b>.pdb</b>) of een tabel uit Excel (<b>.csv</b>), of sleep ze hierheen.</p>
+      <input type="file" id="impFile" class="sr" multiple><label class="btn filebtn" for="impFile">Kies bestanden…</label>
+    </div>
+    <details class="help">
+      <summary>Hoe haal ik de bestanden van mijn Palm?</summary>
+      <ol>
+        <li><b>Met een geheugenkaart</b> (Palm met kaartsleuf, zoals m500, Zire, Tungsten of T|X): installeer het gratis programma FileZ en kopieer daarmee de databases naar de kaart. Voor de gewone Onkosten-app is dat <code>ExpenseDB</code>. Voor ExpensePlus kopieer je alle databases van ExpensePlus; sorteer in FileZ op Creator, dan staan ze bij elkaar. Op de computer vind je ze als <code>.pdb</code>, meestal in de map <code>PALM/Launcher</code>.</li>
+        <li><b>Met HotSync en Palm Desktop</b>: doe een HotSync en zoek daarna op die computer naar bestanden die eindigen op <code>.pdb</code> in de map van je Palm-gebruikersnaam, meestal in de submap <code>Backup</code>.</li>
+        <li><b>Met pilot-link</b> (Linux): <code>pilot-xfer -p usb: -f ExpenseDB</code>, of <code>pilot-xfer -p usb: -b map</code> om alles te kopiëren.</li>
+        <li><b>Excel-bestanden</b> uit ExpensePlus of Palm Desktop: open ze in Excel, kies Opslaan als en dan CSV, en kies dat bestand hier.</li>
+      </ol>
+    </details>
+  </div>
+  <div class="dlg-body" id="impPalm" hidden>
+    <p class="sub" id="impKop"></p>
+    <dl class="kv" id="impInfo"></dl>
+    <p class="kop2">Valuta op de Palm</p>
+    <p class="hint">Kies per valuta van de Palm welke valuta het hier wordt. Het voorbeeldbedrag helpt je herkennen welke het is.</p>
+    <div id="impValuta"></div>
+    <div id="impKm" hidden>
+      <p class="kop2">Ritten (Mileage)</p>
+      <div class="kmrow">
+        <span id="impKmLab">Afstand in:</span>
+        <div class="push" role="group" aria-labelledby="impKmLab"><button type="button" data-eenheid="km">km</button><button type="button" data-eenheid="mijl">mijl</button></div>
+        <label for="impTarief">Vergoeding:</label><input id="impTarief" inputmode="decimal" autocomplete="off"><span>per km</span>
+      </div>
+    </div>
+    <p class="hint" id="impNoot"></p>
+  </div>
+  <div class="dlg-body" id="impCsv" hidden>
+    <p class="sub" id="csvKop"></p>
+    <p class="kop2">Welke kolom is wat?</p>
+    <div class="fields" id="csvMap"></div>
+    <div class="kmrow"><span id="csvDatLab">Datums:</span><div class="push" role="group" aria-labelledby="csvDatLab"><button type="button" data-fmt="dmy">dag-maand-jaar</button><button type="button" data-fmt="mdy">maand/dag/jaar</button></div></div>
+    <p class="kop2">Voorbeeld</p>
+    <div class="tw"><table class="rt" id="csvTabel"></table></div>
+    <p class="hint" id="csvNoot"></p>
+  </div>
+  <div class="dlg-body" id="impOnb" hidden>
+    <p>Deze bestanden komen niet uit de gewone Onkosten-app:</p>
+    <ul class="onblist" id="impOnbLijst"></ul>
+    <p id="impOnbUitleg">Zijn dit de databases van ExpensePlus? Hoe die zijn opgebouwd, is nog niet bekend. Stuur ze naar Claude, dan kan de import erbij worden gebouwd. Ze worden bij dit boekje bewaard en alleen gebruikt om de opbouw uit te zoeken.</p>
+  </div>
+  <div class="dlg-body" id="impOnbBox" hidden>
+    <div class="onb"><span id="impOnbTekst"></span><button type="button" class="btn" id="impOnbStuur">Stuur naar Claude</button></div>
+  </div>
+  <div class="dlg-body" id="impBezig" hidden>
+    <p id="impVoortgang"></p>
+    <div class="meter" aria-hidden="true"><i id="impMeter"></i></div>
+  </div>
+  <div class="dlg-body" style="padding-block:0"><p class="err" id="impErr" role="alert"></p><p class="ok" id="impOk" role="status"></p></div>
+  <div class="dlg-buttons">
+    <button type="button" class="btn" id="impGo" hidden>Importeer</button>
+    <button type="button" class="btn" id="impStuur" hidden>Stuur naar Claude</button>
+    <button type="button" class="btn" id="impAnders" hidden>Andere bestanden</button>
+    <button type="button" class="btn" id="impClose" data-close>Annuleren</button>
+  </div>
+</dialog>
+
+<input type="file" id="backupFile" class="sr" accept=".json,application/json" tabindex="-1" aria-hidden="true">
+
+<dialog class="palm" id="dlgBud" aria-labelledby="budTitle">
+  <form id="formBud" novalidate>
+    <h2 class="dlg-title" id="budTitle">Budgetten</h2>
+    <div class="dlg-body">
+      <ul class="budedit" id="budEdit"></ul>
+      <p><button type="button" class="btn" id="budNieuw">Nieuw budget</button></p>
+      <p class="hint">Het bedrag geldt per maand. Kies je een soort, bijvoorbeeld Brandstof, dan komt een nieuwe post van die soort vanzelf in dit budget. Zonder vinkje begint elke maand weer met het volle bedrag; met vinkje gaat wat over is (of wat je tekortkwam) mee naar de volgende maand.</p>
+      <p class="err" id="budErr" role="alert"></p>
+    </div>
+    <div class="dlg-buttons">
+      <button type="submit" class="btn">OK</button>
+      <button type="button" class="btn" data-close>Annuleren</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="palm wide" id="dlgHist" aria-labelledby="histTitle">
+  <h2 class="dlg-title" id="histTitle">Historie</h2>
+  <div class="dlg-body">
+    <p class="sub" id="histSub"></p>
+    <div class="tw"><table class="rt" id="histTabel"></table></div>
+    <p class="hint" id="histNoot"></p>
+  </div>
+  <div class="dlg-buttons"><button type="button" class="btn" data-close>Sluiten</button></div>
+</dialog>
+
+<dialog class="palm" id="dlgAlert" aria-labelledby="alTitle">
+  <h2 class="dlg-title" id="alTitle"></h2>
+  <div class="dlg-body alert"><span class="ico" id="alIco" aria-hidden="true">!</span><p id="alMsg"></p></div>
+  <div class="dlg-buttons" id="alBtns"></div>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const F = id => document.getElementById(id);
+const LOKAAL = !!(window.claude && window.claude.lokaal);
+const pad = n => String(n).padStart(2, '0');
+const str = v => typeof v === 'string' ? v : '';
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+const MAANDEN = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const MAAND_KORT = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const DAG_KORT = ['ma','di','wo','do','vr','za','zo'];
+
+/* ---------- pixel icons (12×12) ---------- */
+const GLYPHS = {
+  vliegtuig: ['.....##.....','....####....','....####....','....####....','.##########.','############','....####....','....####....','.....##.....','...######...','..########..','............'],
+  bed: ['............','#...........','#...........','#.###.......','#.###.......','#.##########','############','############','#..........#','#..........#','............','............'],
+  bestek: ['.#.#.#...##.','.#.#.#..###.','.#.#.#..###.','.#####..###.','..###...###.','...#....###.','...#.....##.','...#......#.','...#......#.','...#......#.','...#......#.','............'],
+  kop: ['............','...#..#.....','....#..#....','...#..#.....','............','.#######....','.#######.##.','.#######..#.','.#######.##.','..#####.....','.#########..','............'],
+  auto: ['............','............','...######...','..##.##.##..','.##..##..##.','############','##.######.##','############','..##....##..','.####..####.','..##....##..','............'],
+  taxi: ['.....##.....','....####....','...######...','..##.##.##..','.##..##..##.','############','##.######.##','############','..##....##..','.####..####.','..##....##..','............'],
+  pomp: ['..######....','..#....#....','..#....#.#..','..######..#.','..######..#.','..######..#.','..######.##.','..######.#..','..######.#..','..#######...','.########...','............'],
+  p: ['############','#..........#','#..#####...#','#..##..##..#','#..##..##..#','#..#####...#','#..##......#','#..##......#','#..##......#','#..........#','############','............'],
+  trein: ['..########..','.##########.','.#........#.','.#........#.','.##########.','.##########.','.#.######.#.','.##########.','..########..','..#......#..','.#........#.','#..........#'],
+  bus: ['.##########.','#..........#','#.########.#','#.#......#.#','#.#......#.#','#.########.#','#..........#','#.##....##.#','#..........#','############','.##......##.','............'],
+  telefoon: ['............','.##########.','############','##........##','....####....','...######...','..###..###..','.####..####.','.##########.','.##########.','.##########.','............'],
+  weg: ['....#..#....','....#..#....','...#.##.#...','...#....#...','..#..##..#..','..#......#..','.#...##...#.','.#........#.','#....##....#','#..........#','#....##....#','............'],
+  envelop: ['............','............','############','##........##','#.#......#.#','#..#....#..#','#...####...#','#..........#','#..........#','############','............','............'],
+  potlood: ['..........#.','.........###','........####','.......####.','......####..','.....####...','....####....','...####.....','..####......','.#.##.......','##..........','#...........'],
+  cadeau: ['..###..###..','...#.##.#...','############','#....##....#','############','.#...##...#.','.#...##...#.','.#...##...#.','.#...##...#.','.#...##...#.','.##########.','............'],
+  munt: ['...######...','..#......#..','.#..####..#.','#..#.......#','#.#####....#','#..#.......#','#.#####....#','#..#.......#','.#..####..#.','..#......#..','...######...','............'],
+  kar: ['##..........','.#..........','.##########.','.#........#.','..#......#..','..########..','..#.........','..#.........','..#########.','............','...##...##..','...##...##..'],
+  kalender: ['..#......#..','############','#.#......#.#','############','#..........#','#.##.##.##.#','#..........#','#.##.##.##.#','#..........#','#.##.##....#','############','............'],
+  shirt: ['...##..##...','.###.##.###.','##........##','#..........#','###......###','..#......#..','..#......#..','..#......#..','..#......#..','..########..','............','............'],
+  ster: ['.....##.....','.....##.....','....####....','############','.##########.','..########..','...######...','..########..','..###..###..','.##......##.','.#........#.','............'],
+  slagboom: ['............','............','##..........','############','##.##..##..#','############','##..........','##..........','##..........','##..........','####........','............'],
+  stippen: ['............','............','............','............','............','.##..##..##.','.##..##..##.','............','............','............','............','............'],
+};
+const GLYPH_NAMEN = [['auto','Auto'],['bed','Bed'],['bestek','Bestek'],['bus','Bus'],['cadeau','Cadeau'],['envelop','Envelop'],['kalender','Kalender'],['kop','Kopje'],['munt','Munt'],['p','Parkeren'],['pomp','Pomp'],['potlood','Potlood'],['shirt','Shirt'],['slagboom','Slagboom'],['ster','Ster'],['stippen','Stippen'],['taxi','Taxi'],['telefoon','Telefoon'],['trein','Trein'],['vliegtuig','Vliegtuig'],['weg','Weg'],['kar','Winkelwagen']];
+const glyphPad = {};
+function icoon(naam, px = 24) {
+  if (!GLYPHS[naam]) naam = 'stippen';
+  if (!glyphPad[naam]) {
+    let d = '';
+    GLYPHS[naam].forEach((rij, y) => {
+      for (let x = 0; x < 12;) {
+        if (rij[x] !== '#') { x++; continue; }
+        let w = 1;
+        while (x + w < 12 && rij[x + w] === '#') w++;
+        d += `M${x} ${y}h${w}v1h-${w}z`;
+        x += w;
+      }
+    });
+    glyphPad[naam] = d;
+  }
+  const svg = document.createElementNS(SVGNS, 'svg');
+  svg.setAttribute('viewBox', '0 0 12 12');
+  svg.setAttribute('width', px);
+  svg.setAttribute('height', px);
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('shape-rendering', 'crispEdges');
+  const p = document.createElementNS(SVGNS, 'path');
+  p.setAttribute('d', glyphPad[naam]);
+  p.setAttribute('fill', 'currentColor');
+  svg.append(p);
+  return svg;
+}
+
+/* ---------- vocabularies ---------- */
+const SOORTEN = [
+  {id:'abonnementen', naam:'Abonnementen', icoon:'kalender'},
+  {id:'autohuur', naam:'Autohuur', icoon:'auto'},
+  {id:'boodschappen', naam:'Boodschappen', icoon:'kar'},
+  {id:'brandstof', naam:'Brandstof', icoon:'pomp'},
+  {id:'bus', naam:'Bus', icoon:'bus'},
+  {id:'cadeaus', naam:'Cadeaus', icoon:'cadeau'},
+  {id:'diner', naam:'Diner', icoon:'bestek'},
+  {id:'fax', naam:'Fax', icoon:'telefoon'},
+  {id:'fooien', naam:'Fooien', icoon:'munt'},
+  {id:'hotel', naam:'Hotel', icoon:'bed'},
+  {id:'kantoor', naam:'Kantoorartikelen', icoon:'potlood'},
+  {id:'kilometers', naam:'Kilometers', icoon:'weg'},
+  {id:'klein', naam:'Kleine uitgaven', icoon:'munt'},
+  {id:'limousine', naam:'Limousine', icoon:'auto'},
+  {id:'logies', naam:'Logies', icoon:'bed'},
+  {id:'lunch', naam:'Lunch', icoon:'bestek'},
+  {id:'metro', naam:'Metro', icoon:'trein'},
+  {id:'ontbijt', naam:'Ontbijt', icoon:'kop'},
+  {id:'ov', naam:'OV', lang:'OV (bus, tram, metro)', icoon:'bus'},
+  {id:'overig', naam:'Overig', icoon:'stippen'},
+  {id:'parkeren', naam:'Parkeren', icoon:'p'},
+  {id:'porto', naam:'Porto', icoon:'envelop'},
+  {id:'snacks', naam:'Snacks', icoon:'kop'},
+  {id:'taxi', naam:'Taxi', icoon:'taxi'},
+  {id:'telefoon', naam:'Telefoon & internet', icoon:'telefoon'},
+  {id:'tol', naam:'Tol', icoon:'slagboom'},
+  {id:'trein', naam:'Trein', icoon:'trein'},
+  {id:'uitjes', naam:'Uitjes', icoon:'ster'},
+  {id:'vliegtickets', naam:'Vliegtickets', icoon:'vliegtuig'},
+  {id:'wasserij', naam:'Wasserij', icoon:'shirt'},
+  {id:'zakelijk_eten', naam:'Zakelijke maaltijd', icoon:'bestek'},
+];
+const SOORT = Object.fromEntries(SOORTEN.map(s => [s.id, s]));
+const BETALING = [['onbepaald','Onbepaald'],['contant','Contant'],['pinpas','Pinpas'],['creditcard','Creditcard'],['amex','American Express'],['mastercard','Mastercard'],['visa','VISA'],['ideal','iDEAL'],['overboeking','Overboeking'],['cheque','Cheque'],['vooruit','Vooruitbetaald']];
+const STATUS = [['open','Open'],['gedeclareerd','Gedeclareerd'],['vergoed','Vergoed'],['prive','Privé, niet declareren']];
+const VALUTA = [['EUR','€ · euro'],['NLG','ƒ · Nederlandse gulden'],['USD','$ · Amerikaanse dollar'],['GBP','£ · Brits pond'],['CHF','CHF · Zwitserse frank'],['DKK','DKK · Deense kroon'],['SEK','SEK · Zweedse kroon'],['NOK','NOK · Noorse kroon'],['PLN','PLN · Poolse zloty'],['CZK','CZK · Tsjechische kroon'],['JPY','¥ · Japanse yen']];
+const MAX_CATS = 15, MAX_EIGEN = 40, MAX_BUD = 30, MAX_DOCS = 5000;
+const DEFAULT_INST = {
+  categorieen: [{id:'algemeen', naam:'Algemeen'}, {id:'zakelijk', naam:'Zakelijk'}, {id:'prive', naam:'Privé'}, {id:'vakantie', naam:'Vakantie'}],
+  sorteer: 'datum', kmTarief: 0.23, valuta: 'EUR', eigenSoorten: [], verborgenSoorten: [], koersen: {}, nieuw: 'iconen', budgetten: [],
+};
+
+/* ---------- state ---------- */
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const vandaag = () => iso(new Date());
+const begin = new Date();
+const state = {
+  posten: [], stortingen: [], inst: mergeInst(null), loaded: false, opslag: 'laden', dbFout: false, selId: null,
+  view: { mode: 'maand', y: begin.getFullYear(), m: begin.getMonth() + 1, cat: 'alle', scherm: 'posten' },
+};
+let downloads = null;
+function onthoud(k, v) {
+  try { if (v === undefined) return localStorage.getItem('okb.' + k); localStorage.setItem('okb.' + k, v); } catch { return null; }
+  return null;
+}
+try {
+  const v = JSON.parse(onthoud('view') || 'null');
+  if (v && ['maand','jaar','alles'].includes(v.mode)) state.view.mode = v.mode;
+  if (v && typeof v.cat === 'string') state.view.cat = v.cat;
+  if (v && ['posten', 'budget'].includes(v.scherm)) state.view.scherm = v.scherm;
+  else if (LOKAAL) state.view.scherm = 'budget';
+} catch {}
+const bewaarView = () => onthoud('view', JSON.stringify({ mode: state.view.mode, cat: state.view.cat, scherm: state.view.scherm }));
+
+function mergeInst(d) {
+  const i = { ...DEFAULT_INST, ...(d && typeof d === 'object' ? d : {}) };
+  const cats = Array.isArray(i.categorieen) ? i.categorieen.filter(c => c && typeof c.id === 'string' && typeof c.naam === 'string') : [];
+  if (!cats.some(c => c.id === 'algemeen')) cats.unshift({ id: 'algemeen', naam: 'Algemeen' });
+  const eigen = Array.isArray(i.eigenSoorten)
+    ? i.eigenSoorten.filter(s => s && typeof s.id === 'string' && typeof s.naam === 'string' && !SOORT[s.id]).slice(0, MAX_EIGEN).map(s => ({ id: s.id, naam: s.naam, icoon: GLYPHS[s.icoon] ? s.icoon : 'stippen' }))
+    : [];
+  const verborgen = Array.isArray(i.verborgenSoorten) ? i.verborgenSoorten.filter(x => typeof x === 'string' && SOORT[x]) : [];
+  const koersen = {};
+  if (i.koersen && typeof i.koersen === 'object') for (const [k, v] of Object.entries(i.koersen)) if (/^[A-Z]{3}$/.test(k) && Number(v) > 0) koersen[k] = Number(v);
+  const km = Number(i.kmTarief);
+  const budgetten = Array.isArray(i.budgetten)
+    ? i.budgetten.filter(b => b && typeof b.id === 'string' && typeof b.naam === 'string').slice(0, MAX_BUD).map(b => ({
+        id: b.id, naam: b.naam, bedrag: Number(b.bedrag) >= 0 ? Math.round(Number(b.bedrag) * 100) / 100 : 0,
+        soort: str(b.soort), meenemen: b.meenemen === true, start: /^\d{4}-\d{2}$/.test(str(b.start)) ? b.start : '',
+      }))
+    : [];
+  return {
+    categorieen: cats.slice(0, MAX_CATS).map(c => ({ id: c.id, naam: c.naam })),
+    sorteer: ['datum','soort'].includes(i.sorteer) ? i.sorteer : 'datum',
+    kmTarief: km >= 0 && km < 10 ? km : DEFAULT_INST.kmTarief,
+    valuta: VALUTA.some(([k]) => k === i.valuta) ? i.valuta : 'EUR',
+    eigenSoorten: eigen, verborgenSoorten: verborgen, koersen,
+    nieuw: i.nieuw === 'formulier' ? 'formulier' : 'iconen',
+    budgetten,
+  };
+}
+function leesPost(id, d) {
+  const num = v => (v === null || v === undefined || v === '' || !Number.isFinite(Number(v))) ? null : Number(v);
+  return {
+    id,
+    datum: /^\d{4}-\d{2}-\d{2}$/.test(str(d.datum)) ? d.datum : '',
+    soort: str(d.soort) || 'overig',
+    bedrag: num(d.bedrag) ?? 0,
+    valuta: /^[A-Z]{3}$/.test(str(d.valuta)) ? d.valuta : 'EUR',
+    koers: num(d.koers), koersNaar: /^[A-Z]{3}$/.test(str(d.koersNaar)) ? d.koersNaar : '',
+    afstand: num(d.afstand), kmTarief: num(d.kmTarief), beginstand: num(d.beginstand), eindstand: num(d.eindstand),
+    betaling: str(d.betaling) || 'onbepaald',
+    categorie: str(d.categorie) || 'algemeen',
+    bon: d.bon === true,
+    status: STATUS.some(([k]) => k === d.status) ? d.status : 'open',
+    leverancier: str(d.leverancier), plaats: str(d.plaats), deelnemers: str(d.deelnemers), notitie: str(d.notitie),
+    voorbeeld: d.voorbeeld === true,
+    bron: str(d.bron),
+    budget: str(d.budget),
+    aangemaakt: str(d.aangemaakt),
+  };
+}
+function leesStorting(id, d) {
+  return {
+    id, budget: str(d.budget), bedrag: Number.isFinite(Number(d.bedrag)) ? Number(d.bedrag) : 0,
+    datum: /^\d{4}-\d{2}-\d{2}$/.test(str(d.datum)) ? d.datum : '', notitie: str(d.notitie), aangemaakt: str(d.aangemaakt),
+  };
+}
+function naarData(p) {
+  const nu = new Date().toISOString();
+  const d = {
+    datum: p.datum, soort: p.soort, bedrag: p.bedrag, valuta: p.valuta, betaling: p.betaling, categorie: p.categorie,
+    bon: !!p.bon, status: p.status || 'open',
+    leverancier: p.leverancier, plaats: p.plaats, deelnemers: p.deelnemers, notitie: p.notitie,
+    aangemaakt: p.aangemaakt || nu, gewijzigd: nu,
+  };
+  for (const k of ['afstand', 'kmTarief', 'beginstand', 'eindstand']) if (p[k] != null) d[k] = p[k];
+  if (p.koers != null && p.koersNaar) { d.koers = p.koers; d.koersNaar = p.koersNaar; }
+  if (p.voorbeeld) d.voorbeeld = true;
+  if (p.bron) d.bron = p.bron;
+  if (p.budget) d.budget = p.budget;
+  return d;
+}
+
+/* ---------- formatting ---------- */
+const fmt = {};
+function geld(n, cur = 'EUR') {
+  if (!fmt[cur]) {
+    try { fmt[cur] = new Intl.NumberFormat('nl-NL', { style: 'currency', currency: cur }); }
+    catch { const f = new Intl.NumberFormat('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); fmt[cur] = { format: x => cur + ' ' + f.format(x) }; }
+  }
+  return fmt[cur].format(n);
+}
+const getalFmt = new Intl.NumberFormat('nl-NL', { maximumFractionDigits: 1 });
+const getal = n => getalFmt.format(n);
+const invoer = (n, dec = 2) => Number(n).toFixed(dec).replace('.', ',');
+const koersTekst = k => String(Number(Number(k).toFixed(6))).replace('.', ',');
+const round2 = n => Math.round(n * 100) / 100;
+const round1 = n => Math.round(n * 10) / 10;
+const centen = n => Math.round(n * 100);
+
+function parseGetal(s) {
+  s = String(s ?? '').trim().replace(/[€$£¥ƒ\s]/g, '').replace(/^[A-Za-z]{3}/, '');
+  if (!s) return NaN;
+  let neg = false;
+  if (/^[-+]/.test(s)) { neg = s[0] === '-'; s = s.slice(1); }
+  const lc = s.lastIndexOf(','), ld = s.lastIndexOf('.');
+  if (lc > -1 && ld > -1) {
+    const dec = lc > ld ? ',' : '.', th = dec === ',' ? '.' : ',';
+    s = s.split(th).join('').replace(dec, '.');
+  } else if (lc > -1) {
+    s = s.slice(0, lc).replace(/,/g, '') + '.' + s.slice(lc + 1);
+  } else if (ld > -1) {
+    const dots = s.split('.').length - 1;
+    if (dots > 1 || s.length - ld - 1 === 3) s = s.replace(/\./g, '');
+  }
+  if (!/^\d*\.?\d*$/.test(s) || s === '.') return NaN;
+  const n = Number(s);
+  return neg ? -n : n;
+}
+
+/* ---------- soorten, categorieën ---------- */
+const alleSoorten = (inst = state.inst) => [...SOORTEN, ...inst.eigenSoorten];
+const soortInfo = id => SOORT[id] || state.inst.eigenSoorten.find(s => s.id === id) || null;
+const soortNaam = id => soortInfo(id)?.naam || id || 'Overig';
+const soortIcoon = id => soortInfo(id)?.icoon || 'stippen';
+function kiesbareSoorten(huidig) {
+  return alleSoorten().filter(s => !state.inst.verborgenSoorten.includes(s.id) || s.id === huidig).sort((a, b) => a.naam.localeCompare(b.naam, 'nl'));
+}
+const catIds = () => state.inst.categorieen.map(c => c.id);
+const catOf = p => catIds().includes(p.categorie) ? p.categorie : 'algemeen';
+const catNaam = id => state.inst.categorieen.find(c => c.id === id)?.naam || 'Algemeen';
+const statusNaam = k => (STATUS.find(([s]) => s === k) || STATUS[0])[1];
+const betalingNaam = k => (BETALING.find(([b]) => b === k) || [0, k])[1];
+const datumKort = d => d ? `${d.slice(8, 10)}-${d.slice(5, 7)}` : '--';
+const datumNL = d => d ? `${d.slice(8, 10)}-${d.slice(5, 7)}-${d.slice(0, 4)}` : '';
+function periodeTekst() {
+  const v = state.view;
+  return v.mode === 'maand' ? `${MAANDEN[v.m - 1]} ${v.y}` : v.mode === 'jaar' ? String(v.y) : 'alle periodes';
+}
+const catTekst = () => state.view.cat === 'alle' ? 'alle categorieën' : catNaam(state.view.cat);
+const aantal = n => `${n} ${n === 1 ? 'post' : 'posten'}`;
+
+/* ---------- selection + sums ---------- */
+function prefix() {
+  const v = state.view;
+  return v.mode === 'maand' ? `${v.y}-${pad(v.m)}` : v.mode === 'jaar' ? String(v.y) : '';
+}
+function gefilterd() {
+  const pre = prefix(), cat = state.view.cat;
+  return state.posten.filter(p => p.datum.startsWith(pre) && (cat === 'alle' || catOf(p) === cat));
+}
+const opDatum = (a, b) => b.datum.localeCompare(a.datum) || b.aangemaakt.localeCompare(a.aangemaakt);
+const oplopend = (a, b) => a.datum.localeCompare(b.datum) || a.aangemaakt.localeCompare(b.aangemaakt);
+function gesorteerd(rows) {
+  if (state.inst.sorteer === 'soort') return rows.slice().sort((a, b) => soortNaam(a.soort).localeCompare(soortNaam(b.soort), 'nl') || opDatum(a, b));
+  return rows.slice().sort(opDatum);
+}
+function inHoofd(p) {
+  const main = state.inst.valuta;
+  if (p.valuta === main) return centen(p.bedrag);
+  if (p.koers > 0 && p.koersNaar === main) return centen(p.bedrag * p.koers);
+  return null;
+}
+function sommen(rows) {
+  let hoofd = 0;
+  const los = new Map();
+  for (const p of rows) {
+    const c = inHoofd(p);
+    if (c !== null) hoofd += c; else los.set(p.valuta, (los.get(p.valuta) || 0) + centen(p.bedrag));
+  }
+  return { hoofd, los };
+}
+function somTekst(s) {
+  return [...(s.hoofd || !s.los.size ? [geld(s.hoofd / 100, state.inst.valuta)] : []), ...[...s.los].sort((a, b) => a[0].localeCompare(b[0])).map(([k, v]) => geld(v / 100, k))].join(' + ');
+}
+
+/* ---------- store ---------- */
+async function opnieuw(fn) {
+  try { return await fn(); }
+  catch (e) { if (e && e.code === 'unavailable') { await sleep(400 + Math.random() * 600); return fn(); } throw e; }
+}
+async function metBackoff(fn) {
+  let wacht = 800;
+  for (let poging = 0; ; poging++) {
+    try { return await fn(); }
+    catch (e) {
+      if (e && (e.code === 'resource_exhausted' || e.code === 'unavailable') && poging < 6) { await sleep(wacht + Math.random() * 400); wacht *= 2; continue; }
+      throw e;
+    }
+  }
+}
+const store = {
+  db: null,
+  nieuwId() { return this.db ? this.db.collection('posten').doc().id : 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); },
+  async zetPost(id, data) {
+    if (this.db) return opnieuw(() => this.db.collection('posten').doc(id).set(data));
+    const p = leesPost(id, data), i = state.posten.findIndex(x => x.id === id);
+    if (i > -1) state.posten[i] = p; else state.posten.push(p);
+    render();
+  },
+  async wisPost(id) {
+    if (this.db) return opnieuw(() => this.db.collection('posten').doc(id).delete());
+    state.posten = state.posten.filter(p => p.id !== id);
+    render();
+  },
+  nieuwStortingId() { return this.db ? this.db.collection('stortingen').doc().id : 's' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); },
+  async zetStorting(id, data) {
+    if (this.db) return opnieuw(() => this.db.collection('stortingen').doc(id).set(data));
+    const x = leesStorting(id, data), i = state.stortingen.findIndex(s => s.id === id);
+    if (i > -1) state.stortingen[i] = x; else state.stortingen.push(x);
+    render();
+  },
+  async wisStorting(id) {
+    if (this.db) return opnieuw(() => this.db.collection('stortingen').doc(id).delete());
+    state.stortingen = state.stortingen.filter(s => s.id !== id);
+    render();
+  },
+  async zetInst(inst) {
+    const clean = mergeInst(inst);
+    if (this.db) return opnieuw(() => this.db.doc('instellingen/app').set(clean));
+    state.inst = clean;
+    render();
+  },
+};
+async function schrijfPosten(items, klaar) {
+  let volgende = 0, gedaan = 0, gestopt = null;
+  const werker = async () => {
+    while (!gestopt && volgende < items.length) {
+      const it = items[volgende++];
+      try { await metBackoff(() => store.zetPost(it.id, it.data)); }
+      catch (e) { gestopt = e; return; }
+      klaar && klaar(++gedaan);
+    }
+  };
+  await Promise.all([werker(), werker(), werker()]);
+  if (gestopt) { gestopt.gedaan = gedaan; throw gestopt; }
+}
+function foutTekst(e) {
+  switch (e && e.code) {
+    case 'quota_exceeded': return LOKAAL ? 'De opslag op dit apparaat is vol. Maak een backup en verwijder daarna oude posten.' : 'Het boekje is vol: er passen maximaal 5.000 posten in. Exporteer oude posten en verwijder ze daarna.';
+    case 'invalid_argument': return 'Opslaan mag niet. Je kunt dit boekje alleen bekijken.';
+    case 'resource_exhausted': return 'Te veel wijzigingen tegelijk. Wacht een paar seconden en probeer het opnieuw.';
+    case 'revoked': return 'Je hebt geen toegang meer tot dit boekje.';
+    default: return 'Opslaan lukte niet. Controleer je verbinding en probeer het opnieuw.';
+  }
+}
+function fout(e) { console.error(e); return ask({ title: 'Niet opgeslagen', icon: '!', msg: foutTekst(e) }); }
+
+/* ---------- render ---------- */
+let catSig = '';
+function vulSelect(sel, opties, waarde) {
+  sel.replaceChildren(...opties.map(([v, t]) => { const o = el('option', null, t); o.value = v; return o; }));
+  if (waarde != null && waarde !== '' && !opties.some(([v]) => v === waarde)) { const o = el('option', null, waarde); o.value = waarde; sel.append(o); }
+  if (waarde != null) sel.value = waarde;
+}
+function renderCatFilter() {
+  const sel = F('catFilter');
+  if (state.view.cat !== 'alle' && !catIds().includes(state.view.cat)) { state.view.cat = 'alle'; bewaarView(); }
+  const sig = JSON.stringify(state.inst.categorieen);
+  if (sig !== catSig) {
+    catSig = sig;
+    vulSelect(sel, [['alle', 'Alle'], ...state.inst.categorieen.map(c => [c.id, c.naam]), ['__edit', 'Bewerk categorieën…']]);
+  }
+  sel.value = state.view.cat;
+}
+function renderPeriod() {
+  const v = state.view, budget = v.scherm === 'budget', maand = budget || v.mode === 'maand';
+  $$('.period [data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === v.mode)));
+  F('modeGroup').hidden = budget;
+  F('stepper').hidden = !budget && v.mode === 'alles';
+  const lab = F('plabel');
+  lab.textContent = maand ? `${MAAND_KORT[v.m - 1]} ${v.y}` : String(v.y);
+  lab.setAttribute('aria-label', (maand ? `${cap(MAANDEN[v.m - 1])} ${v.y}` : cap(periodeTekst())) + ', terug naar vandaag');
+}
+function notice(text, knop, actie) {
+  const d = el('div', 'notice');
+  d.append(el('span', null, text));
+  if (knop) { const b = el('button', 'btn', knop); b.type = 'button'; b.addEventListener('click', actie); d.append(b); }
+  return d;
+}
+function renderNotices() {
+  const n = F('notices');
+  n.replaceChildren();
+  if (state.opslag === 'geheugen') n.append(notice('Opslaan werkt niet in deze weergave. Wat je invoert, verdwijnt als je de pagina sluit.'));
+  if (state.dbFout) n.append(notice('De verbinding met het boekje is verbroken. Laad de pagina opnieuw.'));
+  if (LOKAAL && state.loaded && state.posten.length + state.stortingen.length >= 5) {
+    const laatste = onthoud('backup');
+    if (!laatste || (Date.now() - new Date(laatste).getTime()) / 86400000 > 30) {
+      n.append(notice(`Je gegevens staan alleen op dit apparaat. ${laatste ? 'Je laatste backup is van ' + datumNL(laatste) + '.' : 'Je hebt nog geen backup gemaakt.'}`, 'Backup maken', maakBackup));
+    }
+  }
+  if (state.view.scherm === 'budget') return;
+  const vb = state.posten.filter(p => p.voorbeeld).length;
+  if (vb) n.append(notice(`Er ${vb === 1 ? 'staat 1 voorbeeldpost' : `staan ${vb} voorbeeldposten`} in je boekje.`, 'Wissen', wisVoorbeelden));
+  if (state.loaded && state.posten.length === vb && !state.posten.some(p => p.bron)) n.append(notice('Staan er nog onkosten op je Palm? Zet ze over naar dit boekje.', 'Importeer', openImport));
+}
+function rij(p) {
+  const li = el('li');
+  const b = el('button', 'row' + (p.id === state.selId ? ' sel' : ''));
+  b.type = 'button';
+  const bud = p.budget ? budgetInfo(p.budget) : null, opBudget = bud && p.soort === 'overig';
+  const s = el('span', 's', opBudget ? bud.naam : soortNaam(p.soort));
+  if (p.soort === 'kilometers' && p.afstand != null) s.append(el('span', 'meta', ` · ${getal(p.afstand)} km`));
+  else if (bud && p.notitie) s.append(el('span', 'meta', ' · ' + p.notitie.split('\n')[0]));
+  if (p.voorbeeld) s.append(el('span', 'vb', 'vb'));
+  b.append(el('span', 'd', datumKort(p.datum)), icoon(opBudget ? budgetIcoon(bud) : soortIcoon(p.soort)), s, el('span', 'a', geld(p.bedrag, p.valuta)));
+  b.addEventListener('click', () => openPost(p.id));
+  li.append(b);
+  return li;
+}
+function renderList() {
+  const list = F('list');
+  list.replaceChildren();
+  if (!state.loaded) { list.append(el('li', 'empty', 'Boekje openen…')); return; }
+  const rows = gesorteerd(gefilterd());
+  if (!rows.length) {
+    const v = state.view, inCat = v.cat === 'alle' ? '' : ` in ${catNaam(v.cat)}`;
+    const wanneer = v.mode === 'alles' ? '' : ` in ${periodeTekst()}`;
+    list.append(el('li', 'empty', `Geen posten${inCat}${wanneer}. Tik op Nieuw om een uitgave te noteren.`));
+    return;
+  }
+  const groeperen = state.view.mode !== 'maand' && state.inst.sorteer === 'datum';
+  const perMaand = new Map();
+  if (groeperen) for (const p of rows) { const k = p.datum.slice(0, 7); if (!perMaand.has(k)) perMaand.set(k, []); perMaand.get(k).push(p); }
+  let huidig = null;
+  for (const p of rows) {
+    if (groeperen) {
+      const k = p.datum.slice(0, 7);
+      if (k !== huidig) {
+        huidig = k;
+        const kop = el('li', 'grp'), m = Number(k.slice(5, 7));
+        kop.append(el('span', null, m ? `${MAANDEN[m - 1]} ${k.slice(0, 4)}` : 'Zonder datum'), el('span', null, somTekst(sommen(perMaand.get(k)))));
+        list.append(kop);
+      }
+    }
+    list.append(rij(p));
+  }
+}
+function renderTotals() {
+  if (!state.loaded) { F('count').textContent = ' '; F('sum').textContent = ''; return; }
+  const rows = gefilterd();
+  F('count').textContent = aantal(rows.length);
+  F('sum').textContent = somTekst(sommen(rows));
+}
+function render() {
+  const budget = state.view.scherm === 'budget';
+  F('tabPosten').className = 'tab' + (budget ? ' uit' : '');
+  F('tabBudget').className = 'tab' + (budget ? '' : ' uit');
+  for (const t of [F('tabPosten'), F('tabBudget')]) {
+    const actief = t.dataset.scherm === state.view.scherm;
+    if (actief) { t.setAttribute('aria-haspopup', 'menu'); t.setAttribute('aria-controls', 'menu'); t.setAttribute('aria-expanded', String(!F('menu').hidden)); t.title = 'Menu'; }
+    else { t.removeAttribute('aria-haspopup'); t.removeAttribute('aria-controls'); t.removeAttribute('aria-expanded'); t.title = 'Naar ' + t.textContent; }
+  }
+  F('catPop').hidden = budget;
+  F('list').hidden = budget;
+  F('budScherm').hidden = !budget;
+  F('barPosten').hidden = budget;
+  F('barBudget').hidden = !budget;
+  renderCatFilter(); renderPeriod(); renderNotices();
+  if (budget) renderBudget(); else { renderList(); renderTotals(); }
+  if (F('dlgHist').open) renderHistorie();
+  F('btnOv').disabled = F('btnExp').disabled = F('btnRap').disabled = !state.loaded;
+  if (F('dlgOv').open) renderOv();
+  if (F('dlgRap').open) renderRapport();
+}
+
+/* ---------- alert ---------- */
+function ask({ title, msg, icon = '!', buttons = [{ label: 'OK', value: true }] }) {
+  return new Promise(res => {
+    const d = F('dlgAlert');
+    F('alTitle').textContent = title;
+    F('alIco').textContent = icon;
+    F('alMsg').textContent = msg;
+    const box = F('alBtns');
+    box.replaceChildren();
+    let result = false;
+    for (const b of buttons) {
+      const k = el('button', 'btn', b.label);
+      k.type = 'button';
+      k.addEventListener('click', () => { result = b.value; d.close(); });
+      box.append(k);
+    }
+    d.addEventListener('close', () => res(result), { once: true });
+    d.showModal();
+    box.firstChild && box.firstChild.focus();
+  });
+}
+
+/* ---------- quick entry (icons) ---------- */
+function openNieuw() { if (state.inst.nieuw === 'iconen') openSnel(); else openPost(null); }
+function openSnel() {
+  const box = F('snelTegels');
+  box.replaceChildren();
+  for (const s of kiesbareSoorten()) {
+    const b = el('button', 'tile');
+    b.type = 'button';
+    b.append(icoon(s.icoon, 36), el('span', null, s.naam));
+    b.addEventListener('click', () => { F('dlgSnel').close(); openPost(null, s.id); });
+    box.append(b);
+  }
+  F('dlgSnel').showModal();
+}
+F('snelForm').addEventListener('click', () => { F('dlgSnel').close(); openPost(null); });
+
+/* ---------- details ---------- */
+let bewerk = null, statusAangeraakt = false, budgetAangeraakt = false;
+const autoBudget = soort => state.inst.budgetten.find(b => b.soort && b.soort === soort)?.id || '';
+function kmTariefVoorForm() { return bewerk && bewerk.soort === 'kilometers' && bewerk.kmTarief != null ? bewerk.kmTarief : state.inst.kmTarief; }
+function kmValuta() { return bewerk && bewerk.soort === 'kilometers' ? bewerk.valuta : state.inst.valuta; }
+function laatsteStand() {
+  const r = state.posten.filter(p => p.soort === 'kilometers' && p.eindstand != null).sort(opDatum)[0];
+  return r ? r.eindstand : null;
+}
+function toonVelden() {
+  const km = F('fSoort').value === 'kilometers';
+  F('rowBedrag').hidden = km;
+  F('rowValuta').hidden = km;
+  F('rowStanden').hidden = !km;
+  F('rowAfstand').hidden = !km;
+  F('kmCalc').hidden = !km;
+  const vreemd = !km && F('fValuta').value !== state.inst.valuta;
+  F('rowKoers').hidden = !vreemd;
+  F('koersCalc').hidden = !vreemd;
+  F('kVan').textContent = F('fValuta').value;
+  F('kNaar').textContent = state.inst.valuta;
+  updateKm();
+  updateKoers();
+}
+function updateKm() {
+  const t = kmTariefVoorForm(), v = kmValuta(), a = parseGetal(F('fAfstand').value);
+  F('kmCalc').textContent = Number.isFinite(a) && a > 0 ? `= ${geld(round2(a * t), v)} à ${geld(t, v)} per km` : `${geld(t, v)} per km`;
+}
+function updateKoers() {
+  const k = parseGetal(F('fKoers').value), b = parseGetal(F('fBedrag').value), main = state.inst.valuta;
+  F('koersCalc').textContent = k > 0
+    ? (Number.isFinite(b) ? `= ${geld(round2(b * k), main)}` : `1 ${F('fValuta').value} = ${geld(k, main)}`)
+    : 'Zonder koers telt dit bedrag niet mee in je totalen.';
+}
+function updateStanden() {
+  const b = parseGetal(F('fBegin').value), e = parseGetal(F('fEind').value);
+  if (Number.isFinite(b) && Number.isFinite(e) && e > b) { F('fAfstand').value = String(round1(e - b)).replace('.', ','); updateKm(); }
+}
+function openPost(id, soortKeuze) {
+  const p = id ? state.posten.find(x => x.id === id) : null;
+  if (id && !p) return;
+  bewerk = p;
+  statusAangeraakt = !!p;
+  F('postTitle').textContent = p ? 'Details' : 'Nieuwe post';
+  const soort = p ? p.soort : (soortKeuze || (soortInfo(onthoud('soort')) ? onthoud('soort') : 'lunch'));
+  vulSelect(F('fSoort'), kiesbareSoorten(soort).map(s => [s.id, s.lang || s.naam]), soort);
+  vulSelect(F('fValuta'), VALUTA, p ? p.valuta : state.inst.valuta);
+  const bet = p ? p.betaling : (onthoud('betaling') || 'onbepaald');
+  vulSelect(F('fBetaling'), BETALING, BETALING.some(([k]) => k === bet) || p ? bet : 'onbepaald');
+  const cat = p ? catOf(p) : (state.view.cat !== 'alle' ? state.view.cat : 'algemeen');
+  vulSelect(F('fCat'), state.inst.categorieen.map(c => [c.id, c.naam]), cat);
+  vulSelect(F('fStatus'), STATUS, p ? p.status : (cat === 'prive' ? 'prive' : 'open'));
+  budgetAangeraakt = !!p;
+  vulSelect(F('fBudget'), [['', '— geen —'], ...state.inst.budgetten.map(b => [b.id, b.naam])], p ? p.budget : autoBudget(soort));
+  F('rowBudget').hidden = !state.inst.budgetten.length && !(p && p.budget);
+  F('fDatum').value = p && p.datum ? p.datum : vandaag();
+  F('fBedrag').value = p && p.soort !== 'kilometers' ? invoer(p.bedrag) : '';
+  const k = p && p.koers ? p.koers : state.inst.koersen[F('fValuta').value];
+  F('fKoers').value = k ? koersTekst(k) : '';
+  F('fAfstand').value = p && p.afstand != null ? String(p.afstand).replace('.', ',') : '';
+  const stand = p ? p.beginstand : laatsteStand();
+  F('fBegin').value = stand != null ? String(stand).replace('.', ',') : '';
+  F('fEind').value = p && p.eindstand != null ? String(p.eindstand).replace('.', ',') : '';
+  F('fBon').checked = p ? p.bon : false;
+  F('fLev').value = p ? p.leverancier : '';
+  F('fPlaats').value = p ? p.plaats : '';
+  F('fDeeln').value = p ? p.deelnemers : '';
+  F('fNotitie').value = p ? p.notitie : '';
+  F('btnDel').hidden = !p;
+  F('postErr').textContent = '';
+  F('postOk').disabled = false;
+  toonVelden();
+  state.selId = p ? p.id : null;
+  renderList();
+  F('dlgPost').showModal();
+  if (!p) (F('fSoort').value === 'kilometers' ? (F('fBegin').value ? F('fEind') : F('fAfstand')) : F('fBedrag')).focus();
+}
+function veldFout(input, tekst) { F('postErr').textContent = tekst; input.focus(); }
+F('fSoort').addEventListener('change', () => { if (!budgetAangeraakt) F('fBudget').value = autoBudget(F('fSoort').value); toonVelden(); });
+F('fBudget').addEventListener('change', () => { budgetAangeraakt = true; });
+F('fValuta').addEventListener('change', () => {
+  const k = state.inst.koersen[F('fValuta').value];
+  F('fKoers').value = k ? koersTekst(k) : '';
+  toonVelden();
+});
+F('fKoers').addEventListener('input', updateKoers);
+F('fBedrag').addEventListener('input', updateKoers);
+F('fAfstand').addEventListener('input', updateKm);
+F('fBegin').addEventListener('input', updateStanden);
+F('fEind').addEventListener('input', updateStanden);
+F('fStatus').addEventListener('change', () => { statusAangeraakt = true; });
+F('fCat').addEventListener('change', () => { if (!statusAangeraakt) F('fStatus').value = F('fCat').value === 'prive' ? 'prive' : 'open'; });
+F('formPost').addEventListener('submit', async e => {
+  e.preventDefault();
+  const soort = F('fSoort').value, datum = F('fDatum').value, main = state.inst.valuta;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(datum)) return veldFout(F('fDatum'), 'Kies een datum.');
+  let bedrag, valuta = F('fValuta').value, afstand = null, kmTarief = null, beginstand = null, eindstand = null, koers = null, koersNaar = '';
+  if (soort === 'kilometers') {
+    const b = parseGetal(F('fBegin').value), en = parseGetal(F('fEind').value);
+    beginstand = Number.isFinite(b) ? b : null;
+    eindstand = Number.isFinite(en) ? en : null;
+    if (beginstand != null && eindstand != null && eindstand < beginstand) return veldFout(F('fEind'), 'De eindstand is lager dan de beginstand.');
+    afstand = parseGetal(F('fAfstand').value);
+    if (!(afstand > 0) && beginstand != null && eindstand != null) afstand = eindstand - beginstand;
+    if (!(afstand > 0)) return veldFout(F('fAfstand'), 'Vul het aantal kilometers in, of de begin- en eindstand.');
+    afstand = round1(afstand);
+    kmTarief = kmTariefVoorForm();
+    valuta = kmValuta();
+    bedrag = round2(afstand * kmTarief);
+  } else {
+    bedrag = parseGetal(F('fBedrag').value);
+    if (!Number.isFinite(bedrag)) return veldFout(F('fBedrag'), 'Vul een bedrag in, bijvoorbeeld 12,50.');
+    bedrag = round2(bedrag);
+    if (valuta !== main && F('fKoers').value.trim()) {
+      const k = parseGetal(F('fKoers').value);
+      if (!(k > 0)) return veldFout(F('fKoers'), 'Vul een koers in, bijvoorbeeld 1,17, of laat het veld leeg.');
+      koers = k; koersNaar = main;
+    }
+  }
+  const id = bewerk ? bewerk.id : store.nieuwId();
+  const post = {
+    datum, soort, bedrag, valuta, afstand, kmTarief, beginstand, eindstand, koers, koersNaar,
+    betaling: F('fBetaling').value, categorie: F('fCat').value, bon: F('fBon').checked, status: F('fStatus').value,
+    leverancier: F('fLev').value.trim(), plaats: F('fPlaats').value.trim(), deelnemers: F('fDeeln').value.trim(), notitie: F('fNotitie').value.trim(),
+    aangemaakt: bewerk ? bewerk.aangemaakt : '', voorbeeld: false, bron: bewerk ? bewerk.bron : '', budget: F('fBudget').value,
+  };
+  F('postOk').disabled = true;
+  try {
+    await store.zetPost(id, naarData(post));
+  } catch (err) {
+    console.error(err);
+    F('postOk').disabled = false;
+    F('postErr').textContent = foutTekst(err);
+    return;
+  }
+  onthoud('soort', soort);
+  onthoud('betaling', post.betaling);
+  const v = state.view;
+  if (v.mode === 'maand' && !datum.startsWith(`${v.y}-${pad(v.m)}`)) { v.y = Number(datum.slice(0, 4)); v.m = Number(datum.slice(5, 7)); }
+  if (v.mode === 'jaar' && !datum.startsWith(String(v.y))) v.y = Number(datum.slice(0, 4));
+  F('dlgPost').close();
+  render();
+  if (koers && state.inst.koersen[valuta] !== koers) store.zetInst({ ...state.inst, koersen: { ...state.inst.koersen, [valuta]: koers } }).catch(err => console.error(err));
+});
+F('btnDel').addEventListener('click', async () => {
+  if (!bewerk) return;
+  const ok = await ask({ title: 'Post verwijderen', icon: '?', msg: `${soortNaam(bewerk.soort)} van ${datumNL(bewerk.datum)} (${geld(bewerk.bedrag, bewerk.valuta)}) verwijderen?`, buttons: [{ label: 'Verwijder', value: true }, { label: 'Annuleren', value: false }] });
+  if (!ok) return;
+  try { await store.wisPost(bewerk.id); F('dlgPost').close(); }
+  catch (e) { F('postErr').textContent = foutTekst(e); }
+});
+F('dlgPost').addEventListener('close', () => { bewerk = null; state.selId = null; renderList(); });
+
+/* ---------- overview ---------- */
+let ovMode = 'soort';
+function renderOv() {
+  $$('#dlgOv [data-ov]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.ov === ovMode)));
+  F('ovSub').textContent = `${cap(periodeTekst())} · ${catTekst()}`;
+  const main = state.inst.valuta, groepen = new Map(), rows = gefilterd();
+  for (const p of rows) {
+    const c = inHoofd(p);
+    if (c === null) continue;
+    const k = ovMode === 'soort' ? soortNaam(p.soort) : catNaam(catOf(p));
+    groepen.set(k, (groepen.get(k) || 0) + c);
+  }
+  const lijst = [...groepen].sort((a, b) => b[1] - a[1]);
+  const max = Math.max(1, ...lijst.map(x => x[1]));
+  const ul = F('ovBars');
+  ul.replaceChildren();
+  if (!lijst.length) ul.append(el('li', 'none', 'Geen posten in deze selectie.'));
+  for (const [naam, c] of lijst) {
+    const li = el('li'), t = el('span', 't'), i = el('i');
+    i.style.width = Math.max(0, c / max * 100) + '%';
+    t.append(i);
+    li.append(el('span', 'l', naam), t, el('span', 'a', geld(c / 100, main)));
+    ul.append(li);
+  }
+  const s = sommen(rows);
+  F('ovTotal').textContent = geld(s.hoofd / 100, main);
+  const open = rows.filter(p => p.status === 'open'), gd = rows.filter(p => p.status === 'gedeclareerd');
+  const delen = [];
+  if (open.length) delen.push(`Nog te declareren: ${somTekst(sommen(open))} (${aantal(open.length)}).`);
+  if (gd.length) delen.push(`Gedeclareerd, nog niet vergoed: ${somTekst(sommen(gd))} (${aantal(gd.length)}).`);
+  F('ovStatus').textContent = delen.join(' ');
+  F('ovOther').hidden = !s.los.size;
+  F('ovOther').textContent = s.los.size ? 'Niet meegeteld, andere valuta zonder koers: ' + [...s.los].map(([k, v]) => geld(v / 100, k)).join(', ') : '';
+}
+function openOverzicht() { renderOv(); F('dlgOv').showModal(); }
+$$('#dlgOv [data-ov]').forEach(b => b.addEventListener('click', () => { ovMode = b.dataset.ov; renderOv(); }));
+
+/* ---------- reports ---------- */
+const maandag = d => { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - (x.getDay() + 6) % 7); return x; };
+const plusDagen = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dag = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - dag);
+  return Math.ceil(((t - new Date(Date.UTC(t.getUTCFullYear(), 0, 1))) / 86400000 + 1) / 7);
+}
+const rap = { tab: 'declaratie', week: maandag(new Date()), data: null };
+function startWeek() {
+  const nu = new Date(), pre = prefix(), v = state.view;
+  if (!pre || vandaag().startsWith(pre)) return maandag(nu);
+  return maandag(v.mode === 'maand' ? new Date(v.y, v.m - 1, 1) : new Date(v.y, 0, 1));
+}
+function bedragCel(p) {
+  const main = state.inst.valuta, c = inHoofd(p);
+  if (p.valuta === main) return { t: geld(p.bedrag, main), n: true };
+  if (c !== null) return { t: geld(c / 100, main), n: true, klein: `${geld(p.bedrag, p.valuta)} à ${koersTekst(p.koers)}` };
+  return { t: geld(p.bedrag, p.valuta), n: true, klein: 'niet omgerekend' };
+}
+function omschrijving(p) {
+  const t = [p.leverancier, p.plaats].filter(Boolean).join(', ');
+  return t || p.notitie.split('\n')[0];
+}
+const standTekst = n => n == null ? '' : getal(n);
+function rapportData() {
+  const main = state.inst.valuta;
+  if (rap.tab === 'week') {
+    const ma = rap.week, dagen = [...Array(7)].map((_, i) => iso(plusDagen(ma, i)));
+    const cat = state.view.cat;
+    const rows = state.posten.filter(p => dagen.includes(p.datum) && (cat === 'alle' || catOf(p) === cat));
+    const per = new Map();
+    let los = 0;
+    for (const p of rows) {
+      const c = inHoofd(p);
+      if (c === null) { los++; continue; }
+      if (!per.has(p.soort)) per.set(p.soort, Array(7).fill(0));
+      per.get(p.soort)[dagen.indexOf(p.datum)] += c;
+    }
+    const soorten = [...per.keys()].sort((a, b) => soortNaam(a).localeCompare(soortNaam(b), 'nl'));
+    const dagTot = Array(7).fill(0);
+    const bedr = c => c ? invoer(c / 100) : '';
+    const rijen = soorten.map(s => { const v = per.get(s); v.forEach((c, i) => { dagTot[i] += c; }); return [soortNaam(s), ...v.map(c => ({ t: bedr(c), n: true })), { t: bedr(v.reduce((a, b) => a + b, 0)), n: true }]; });
+    const kop = ['Soort', ...dagen.map((d, i) => ({ t: `${DAG_KORT[i]} ${Number(d.slice(8, 10))}`, n: true })), { t: 'Totaal', n: true }];
+    const voet = ['Totaal', ...dagTot.map(c => ({ t: bedr(c), n: true })), { t: bedr(dagTot.reduce((a, b) => a + b, 0)), n: true }];
+    const zo = plusDagen(ma, 6);
+    return {
+      label: `Week ${isoWeek(ma)} · ${ma.getDate()} ${MAAND_KORT[ma.getMonth()]} – ${zo.getDate()} ${MAAND_KORT[zo.getMonth()]} ${zo.getFullYear()}`,
+      sub: `Bedragen in ${main} · ${catTekst()}`, kop, rijen, voet: rijen.length ? voet : null,
+      leeg: 'Geen posten in deze week.',
+      noot: los ? `${cap(aantal(los))} in een andere valuta zonder koers ${los === 1 ? 'telt' : 'tellen'} niet mee.` : '',
+      csv: [kop.map(c => c.t || c), ...rijen.map(r => r.map(c => c.t ?? c)), ...(rijen.length ? [voet.map(c => c.t ?? c)] : [])],
+      naam: `weekstaat-${ma.getFullYear()}-w${pad(isoWeek(ma))}`, posten: [],
+    };
+  }
+  const rows = gefilterd().sort(oplopend);
+  if (rap.tab === 'ritten') {
+    const ritten = rows.filter(p => p.soort === 'kilometers');
+    const km = ritten.reduce((a, p) => a + (p.afstand || 0), 0);
+    const dat = state.view.mode === 'alles' ? datumNL : datumKort;
+    const kop = ['Datum', 'Route', { t: 'Begin', n: true }, { t: 'Eind', n: true }, { t: 'Km', n: true }, { t: 'Vergoeding', n: true }];
+    const rijen = ritten.map(p => [dat(p.datum), [p.plaats, p.notitie.split('\n')[0]].filter(Boolean).join(' · '), { t: standTekst(p.beginstand), n: true }, { t: standTekst(p.eindstand), n: true }, { t: getal(p.afstand || 0), n: true }, { t: geld(p.bedrag, p.valuta), n: true }]);
+    return {
+      sub: `${cap(periodeTekst())} · ${catTekst()}`, kop, rijen,
+      voet: ritten.length ? ['Totaal', '', '', '', { t: getal(km), n: true }, { t: somTekst(sommen(ritten)), n: true }] : null,
+      leeg: 'Geen ritten in deze selectie.', noot: '',
+      csv: [['Datum', 'Route', 'Beginstand', 'Eindstand', 'Km', 'Vergoeding', 'Valuta'], ...ritten.map(p => [datumNL(p.datum), [p.plaats, p.notitie.split('\n')[0]].filter(Boolean).join(' · '), p.beginstand == null ? '' : String(p.beginstand).replace('.', ','), p.eindstand == null ? '' : String(p.eindstand).replace('.', ','), String(p.afstand || 0).replace('.', ','), invoer(p.bedrag), p.valuta])],
+      naam: `rittenstaat-${bestandsDeel()}`, posten: [],
+    };
+  }
+  const kort = { open: 'Open', gedeclareerd: 'Gedecl.', vergoed: 'Vergoed', prive: 'Privé' };
+  const dat = state.view.mode === 'alles' ? datumNL : datumKort;
+  const kop = ['Datum', 'Post', 'Bon', 'Status', { t: 'Bedrag', n: true }];
+  const rijen = rows.map(p => [dat(p.datum), { t: soortNaam(p.soort), klein: omschrijving(p) }, p.bon ? 'ja' : '', kort[p.status] || 'Open', bedragCel(p)]);
+  const open = rows.filter(p => p.status === 'open'), gd = rows.filter(p => p.status === 'gedeclareerd');
+  const delen = [];
+  if (open.length) delen.push(`Nog te declareren: ${somTekst(sommen(open))} (${aantal(open.length)}).`);
+  if (gd.length) delen.push(`Gedeclareerd, nog niet vergoed: ${somTekst(sommen(gd))}.`);
+  const zonderBon = rows.filter(p => !p.bon && p.soort !== 'kilometers' && p.status !== 'prive').length;
+  if (zonderBon) delen.push(`${cap(aantal(zonderBon))} zonder bonnetje.`);
+  return {
+    sub: `${cap(periodeTekst())} · ${catTekst()}`, kop, rijen,
+    voet: rows.length ? ['Totaal', '', '', '', { t: somTekst(sommen(rows)), n: true }] : null,
+    leeg: 'Geen posten in deze selectie.', noot: delen.join(' '),
+    csv: [['Datum', 'Soort', 'Omschrijving', 'Bon', 'Status', 'Bedrag', 'Valuta', 'Koers', `Bedrag in ${main}`],
+      ...rows.map(p => { const c = inHoofd(p); return [datumNL(p.datum), soortNaam(p.soort), omschrijving(p), p.bon ? 'ja' : 'nee', statusNaam(p.status), invoer(p.bedrag), p.valuta, p.koers ? koersTekst(p.koers) : '', c === null ? '' : invoer(c / 100)]; })],
+    naam: `declaratie-${bestandsDeel()}`, posten: rows,
+  };
+}
+function cel(tag, c) {
+  const td = el(tag);
+  if (typeof c === 'string') td.textContent = c;
+  else { td.textContent = c.t; if (c.n) td.className = 'n'; if (c.klein) td.append(el('span', 'klein', c.klein)); }
+  return td;
+}
+function renderRapport() {
+  $$('#dlgRap [data-tab]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tab === rap.tab)));
+  const d = rapportData();
+  rap.data = d;
+  F('rapWeek').hidden = rap.tab !== 'week';
+  if (d.label) F('rapWeekLabel').textContent = d.label;
+  F('rapSub').textContent = d.sub;
+  const t = F('rapTabel');
+  t.replaceChildren();
+  const thead = el('thead'), hr = el('tr');
+  d.kop.forEach(c => hr.append(cel('th', c)));
+  thead.append(hr);
+  const tbody = el('tbody');
+  if (!d.rijen.length) { const tr = el('tr'), td = el('td', 'leeg', d.leeg); td.colSpan = d.kop.length; tr.append(td); tbody.append(tr); }
+  for (const r of d.rijen) { const tr = el('tr'); r.forEach(c => tr.append(cel('td', c))); tbody.append(tr); }
+  t.append(thead, tbody);
+  if (d.voet) { const tf = el('tfoot'), tr = el('tr'); d.voet.forEach(c => tr.append(cel('td', c))); tf.append(tr); t.append(tf); }
+  F('rapNoot').textContent = d.noot;
+  const decl = rap.tab === 'declaratie';
+  const open = d.posten.filter(p => p.status === 'open').length, gd = d.posten.filter(p => p.status === 'gedeclareerd').length;
+  F('rapGedecl').hidden = !decl || !open;
+  F('rapVergoed').hidden = !decl || !gd;
+  F('rapGedecl').textContent = `Markeer ${open} als gedeclareerd`;
+  F('rapVergoed').textContent = `Markeer ${gd} als vergoed`;
+  F('rapSave').hidden = !downloads;
+  F('rapSave').disabled = F('rapCopy').disabled = !d.rijen.length;
+}
+function openRapport() {
+  rap.week = startWeek();
+  F('rapErr').textContent = ''; F('rapOk').textContent = '';
+  renderRapport();
+  F('dlgRap').showModal();
+}
+$$('#dlgRap [data-tab]').forEach(b => b.addEventListener('click', () => { rap.tab = b.dataset.tab; F('rapErr').textContent = ''; F('rapOk').textContent = ''; renderRapport(); }));
+F('rapPrev').addEventListener('click', () => { rap.week = plusDagen(rap.week, -7); renderRapport(); });
+F('rapNext').addEventListener('click', () => { rap.week = plusDagen(rap.week, 7); renderRapport(); });
+async function markeer(van, naar) {
+  const rows = (rap.data?.posten || []).filter(p => p.status === van);
+  if (!rows.length) return;
+  const ok = await ask({ title: 'Status wijzigen', icon: '?', msg: `${cap(aantal(rows.length))} (${somTekst(sommen(rows))}) op ${statusNaam(naar).toLowerCase()} zetten?`, buttons: [{ label: 'OK', value: true }, { label: 'Annuleren', value: false }] });
+  if (!ok) return;
+  try {
+    await schrijfPosten(rows.map(p => ({ id: p.id, data: naarData({ ...p, status: naar }) })));
+    F('rapOk').textContent = `${cap(aantal(rows.length))} staan nu op ${statusNaam(naar).toLowerCase()}.`;
+  } catch (e) { console.error(e); F('rapErr').textContent = foutTekst(e); }
+  renderRapport();
+}
+F('rapGedecl').addEventListener('click', () => markeer('open', 'gedeclareerd'));
+F('rapVergoed').addEventListener('click', () => markeer('gedeclareerd', 'vergoed'));
+F('rapSave').addEventListener('click', () => bewaarCsv(rap.data.csv, rap.data.naam + '.csv', F('rapErr'), F('rapOk')));
+F('rapCopy').addEventListener('click', () => kopieer(rap.data.csv, F('rapErr'), F('rapOk'), null));
+
+/* ---------- export ---------- */
+const tekstVeld = v => { v = String(v ?? ''); return /^[=+\-@]/.test(v) ? "'" + v : v; };
+function exportRijen() {
+  const main = state.inst.valuta;
+  const kop = ['Datum','Soort','Bedrag','Valuta','Koers',`Bedrag in ${main}`,'Afstand (km)','Beginstand','Eindstand','Betaling','Categorie','Budget','Bon','Status','Leverancier','Plaats','Deelnemers','Notitie'];
+  const num = n => n == null ? '' : String(n).replace('.', ',');
+  const rows = gesorteerd(gefilterd()).map(p => {
+    const c = inHoofd(p);
+    return [
+      datumNL(p.datum), soortNaam(p.soort), invoer(p.bedrag), p.valuta, p.koers ? koersTekst(p.koers) : '', c === null ? '' : invoer(c / 100),
+      num(p.afstand), num(p.beginstand), num(p.eindstand), betalingNaam(p.betaling), catNaam(catOf(p)), budgetInfo(p.budget)?.naam || '', p.bon ? 'ja' : 'nee', statusNaam(p.status),
+      tekstVeld(p.leverancier), tekstVeld(p.plaats), tekstVeld(p.deelnemers), tekstVeld(p.notitie),
+    ];
+  });
+  return [kop, ...rows];
+}
+const csvVan = rows => '﻿' + rows.map(r => r.map(v => { v = String(v ?? ''); return /[;"\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(';')).join('\r\n');
+const tsvVan = rows => rows.map(r => r.map(v => String(v ?? '').replace(/[\t\r\n]+/g, ' ')).join('\t')).join('\n');
+function bestandsDeel() {
+  const v = state.view;
+  const per = v.mode === 'maand' ? `${v.y}-${pad(v.m)}` : v.mode === 'jaar' ? String(v.y) : 'alles';
+  const cat = v.cat === 'alle' ? '' : '-' + catNaam(v.cat).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return per + cat;
+}
+async function bewaarCsv(rows, naam, errEl, okEl) {
+  errEl.textContent = ''; okEl.textContent = '';
+  try {
+    await downloads.save({ filename: naam, data: csvVan(rows) });
+    okEl.textContent = 'Het bestand is aangeboden om op te slaan.';
+  } catch (e) {
+    const code = e && e.code;
+    if (code === 'declined') return;
+    errEl.textContent = code === 'rate_limited' ? 'Er staat al een vraag om op te slaan open. Rond die eerst af.' : 'Downloaden werkt hier niet. Gebruik Kopieer en plak de tabel in Excel.';
+  }
+}
+function kopieer(rows, errEl, okEl, vak) {
+  errEl.textContent = ''; okEl.textContent = '';
+  const t = tsvVan(rows);
+  const handmatig = () => {
+    if (vak) { vak.value = t; vak.hidden = false; vak.focus(); vak.select(); errEl.textContent = 'Kopiëren werkt hier niet. De tekst is geselecteerd: kopieer hem zelf.'; }
+    else errEl.textContent = 'Kopiëren werkt hier niet. Gebruik Download CSV.';
+  };
+  try { navigator.clipboard.writeText(t).then(() => { okEl.textContent = 'Gekopieerd. Plak het in een leeg werkblad.'; }, handmatig); }
+  catch { handmatig(); }
+}
+function openExport() {
+  const rows = exportRijen(), n = rows.length - 1;
+  F('expMsg').textContent = n ? `${cap(aantal(n))} uit ${periodeTekst()}, ${catTekst()}.` : `Geen posten in ${periodeTekst()}, ${catTekst()}. Kies een andere periode of categorie.`;
+  F('expText').value = tsvVan(rows);
+  F('expText').hidden = !!downloads || !n;
+  F('expSave').hidden = !downloads;
+  F('expSave').disabled = F('expCopy').disabled = !n;
+  F('expErr').textContent = '';
+  F('expOk').textContent = '';
+  F('dlgExp').showModal();
+}
+F('expSave').addEventListener('click', () => bewaarCsv(exportRijen(), `onkosten-${bestandsDeel()}.csv`, F('expErr'), F('expOk')));
+F('expCopy').addEventListener('click', () => kopieer(exportRijen(), F('expErr'), F('expOk'), F('expText')));
+
+/* ---------- preferences ---------- */
+let prefSort = 'datum', prefNieuw = 'iconen';
+function syncPref() {
+  $$('#dlgPref [data-sort]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sort === prefSort)));
+  $$('#dlgPref [data-nieuw]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.nieuw === prefNieuw)));
+}
+function openPrefs() {
+  prefSort = state.inst.sorteer; prefNieuw = state.inst.nieuw; syncPref();
+  vulSelect(F('pValuta'), VALUTA, state.inst.valuta);
+  F('pKm').value = invoer(state.inst.kmTarief);
+  F('prefErr').textContent = '';
+  F('dlgPref').showModal();
+}
+$$('#dlgPref [data-sort]').forEach(b => b.addEventListener('click', () => { prefSort = b.dataset.sort; syncPref(); }));
+$$('#dlgPref [data-nieuw]').forEach(b => b.addEventListener('click', () => { prefNieuw = b.dataset.nieuw; syncPref(); }));
+F('formPref').addEventListener('submit', async e => {
+  e.preventDefault();
+  const t = parseGetal(F('pKm').value);
+  if (!(t >= 0 && t < 10)) { F('prefErr').textContent = 'Vul een km-tarief in tussen 0 en 10, bijvoorbeeld 0,23.'; F('pKm').focus(); return; }
+  try {
+    await store.zetInst({ ...state.inst, sorteer: prefSort, nieuw: prefNieuw, valuta: F('pValuta').value, kmTarief: Math.round(t * 1000) / 1000 });
+    F('dlgPref').close();
+  } catch (err) { console.error(err); F('prefErr').textContent = foutTekst(err); }
+});
+
+/* ---------- categories ---------- */
+let catDraft = [];
+function renderCats() {
+  const ul = F('catList');
+  ul.replaceChildren();
+  catDraft.forEach((c, i) => {
+    const li = el('li'), inp = el('input');
+    inp.id = 'cat-' + c.id; inp.value = c.naam; inp.maxLength = 24; inp.autocomplete = 'off';
+    inp.setAttribute('aria-label', `Naam van categorie ${i + 1}`);
+    inp.addEventListener('input', () => { c.naam = inp.value; });
+    li.append(inp);
+    if (c.id === 'algemeen') li.append(el('span', 'x-pl'));
+    else {
+      const x = el('button', 'x', '×');
+      x.type = 'button';
+      x.setAttribute('aria-label', `Verwijder ${c.naam || 'categorie'}`);
+      x.addEventListener('click', () => { catDraft.splice(i, 1); renderCats(); });
+      li.append(x);
+    }
+    ul.append(li);
+  });
+  F('catCount').textContent = `${catDraft.length} van ${MAX_CATS} categorieën. Gebruik ze bijvoorbeeld per reis, klant of project. Posten uit een categorie die je verwijdert, gaan naar Algemeen.`;
+  F('catNew').disabled = catDraft.length >= MAX_CATS;
+}
+function openCats() {
+  catDraft = state.inst.categorieen.map(c => ({ ...c }));
+  F('catErr').textContent = '';
+  renderCats();
+  F('dlgCat').showModal();
+}
+F('catNew').addEventListener('click', () => {
+  if (catDraft.length >= MAX_CATS) return;
+  catDraft.push({ id: 'c' + Date.now().toString(36), naam: '' });
+  renderCats();
+  const inputs = $$('#catList input');
+  inputs[inputs.length - 1].focus();
+});
+F('formCat').addEventListener('submit', async e => {
+  e.preventDefault();
+  const namen = catDraft.map(c => c.naam.trim());
+  if (namen.some(n => !n)) { F('catErr').textContent = 'Geef elke categorie een naam, of verwijder hem.'; return; }
+  if (new Set(namen.map(n => n.toLowerCase())).size !== namen.length) { F('catErr').textContent = 'Twee categorieën hebben dezelfde naam.'; return; }
+  const weg = state.inst.categorieen.filter(c => !catDraft.some(d => d.id === c.id)).map(c => c.id);
+  const verplaats = state.posten.filter(p => weg.includes(p.categorie));
+  if (verplaats.length) {
+    const ok = await ask({ title: 'Categorie verwijderen', icon: '?', msg: `${cap(aantal(verplaats.length))} ${verplaats.length === 1 ? 'gaat' : 'gaan'} naar Algemeen.`, buttons: [{ label: 'OK', value: true }, { label: 'Annuleren', value: false }] });
+    if (!ok) return;
+  }
+  try {
+    await store.zetInst({ ...state.inst, categorieen: catDraft.map((c, i) => ({ id: c.id, naam: namen[i] })) });
+    await schrijfPosten(verplaats.map(p => ({ id: p.id, data: naarData({ ...p, categorie: 'algemeen' }) })));
+    if (weg.includes(state.view.cat)) { state.view.cat = 'alle'; bewaarView(); }
+    F('dlgCat').close();
+    render();
+  } catch (err) { console.error(err); F('catErr').textContent = foutTekst(err); }
+});
+
+/* ---------- expense types ---------- */
+let srtDraft = null;
+function renderSoorten() {
+  const ul = F('srtEigen');
+  ul.replaceChildren();
+  if (!srtDraft.eigen.length) ul.append(el('li', 'hint', 'Nog geen eigen soorten. Maak er een voor uitgaven die niet in de lijst staan.'));
+  srtDraft.eigen.forEach((s, i) => {
+    const li = el('li'), ic = icoon(s.icoon);
+    const inp = el('input');
+    inp.id = 'srt-' + s.id; inp.value = s.naam; inp.maxLength = 30; inp.autocomplete = 'off';
+    inp.setAttribute('aria-label', `Naam van eigen soort ${i + 1}`);
+    inp.addEventListener('input', () => { s.naam = inp.value; });
+    const pop = el('span', 'popup'), sel = el('select');
+    sel.id = 'srtic-' + s.id;
+    sel.setAttribute('aria-label', `Icoon voor ${s.naam || 'eigen soort'}`);
+    vulSelect(sel, GLYPH_NAMEN, s.icoon);
+    sel.addEventListener('change', () => { s.icoon = sel.value; li.firstChild.replaceWith(icoon(s.icoon)); });
+    pop.append(sel);
+    const x = el('button', 'x', '×');
+    x.type = 'button';
+    x.setAttribute('aria-label', `Verwijder ${s.naam || 'soort'}`);
+    x.addEventListener('click', () => { srtDraft.eigen.splice(i, 1); renderSoorten(); });
+    li.append(ic, inp, pop, x);
+    ul.append(li);
+  });
+  F('srtNieuw').disabled = srtDraft.eigen.length >= MAX_EIGEN;
+  const std = F('srtStd');
+  std.replaceChildren();
+  for (const s of SOORTEN) {
+    const li = el('li'), lab = el('label', 'chk'), cb = el('input');
+    cb.type = 'checkbox'; cb.id = 'srtv-' + s.id; cb.checked = !srtDraft.verborgen.has(s.id);
+    cb.addEventListener('change', () => { if (cb.checked) srtDraft.verborgen.delete(s.id); else srtDraft.verborgen.add(s.id); });
+    lab.append(cb, icoon(s.icoon), el('span', null, s.lang || s.naam));
+    li.append(lab);
+    std.append(li);
+  }
+}
+function openSoorten() {
+  srtDraft = { eigen: state.inst.eigenSoorten.map(s => ({ ...s })), verborgen: new Set(state.inst.verborgenSoorten) };
+  F('srtErr').textContent = '';
+  renderSoorten();
+  F('dlgSrt').showModal();
+}
+F('srtNieuw').addEventListener('click', () => {
+  if (srtDraft.eigen.length >= MAX_EIGEN) return;
+  srtDraft.eigen.push({ id: 'e-' + Date.now().toString(36), naam: '', icoon: 'stippen' });
+  renderSoorten();
+  const inputs = $$('#srtEigen input');
+  inputs[inputs.length - 1].focus();
+});
+F('formSrt').addEventListener('submit', async e => {
+  e.preventDefault();
+  const namen = srtDraft.eigen.map(s => s.naam.trim());
+  if (namen.some(n => !n)) { F('srtErr').textContent = 'Geef elke eigen soort een naam, of verwijder hem.'; return; }
+  if (new Set(namen.map(n => n.toLowerCase())).size !== namen.length) { F('srtErr').textContent = 'Twee eigen soorten hebben dezelfde naam.'; return; }
+  const weg = state.inst.eigenSoorten.filter(s => !srtDraft.eigen.some(d => d.id === s.id)).map(s => s.id);
+  const verplaats = state.posten.filter(p => weg.includes(p.soort));
+  if (verplaats.length) {
+    const ok = await ask({ title: 'Soort verwijderen', icon: '?', msg: `${cap(aantal(verplaats.length))} ${verplaats.length === 1 ? 'krijgt' : 'krijgen'} de soort Overig.`, buttons: [{ label: 'OK', value: true }, { label: 'Annuleren', value: false }] });
+    if (!ok) return;
+  }
+  try {
+    await store.zetInst({ ...state.inst, eigenSoorten: srtDraft.eigen.map((s, i) => ({ id: s.id, naam: namen[i], icoon: s.icoon })), verborgenSoorten: [...srtDraft.verborgen] });
+    await schrijfPosten(verplaats.map(p => ({ id: p.id, data: naarData({ ...p, soort: 'overig' }) })));
+    F('dlgSrt').close();
+    render();
+  } catch (err) { console.error(err); F('srtErr').textContent = foutTekst(err); }
+});
+
+/* ---------- import ---------- */
+// Palm OS Expense (creator 'exps') record: packed date, type, payment, currency, one pad byte,
+// then five NUL-terminated strings: amount, vendor, city, attendees, note.
+const PALM_SOORT = ['vliegtickets','ontbijt','bus','zakelijk_eten','autohuur','diner','uitjes','fax','brandstof','cadeaus','hotel','klein','wasserij','limousine','logies','lunch','kilometers','overig','parkeren','porto','snacks','metro','kantoor','taxi','telefoon','fooien','tol','trein'];
+const PALM_BETALING = ['amex','contant','cheque','creditcard','mastercard','vooruit','visa','onbepaald'];
+const ENGELS_SOORT = { airfare:'vliegtickets', breakfast:'ontbijt', bus:'bus', 'business meals':'zakelijk_eten', businessmeals:'zakelijk_eten', 'car rental':'autohuur', dinner:'diner', entertainment:'uitjes', fax:'fax', gas:'brandstof', fuel:'brandstof', gifts:'cadeaus', gift:'cadeaus', hotel:'hotel', incidentals:'klein', laundry:'wasserij', limo:'limousine', limousine:'limousine', lodging:'logies', lunch:'lunch', mileage:'kilometers', other:'overig', parking:'parkeren', postage:'porto', snack:'snacks', snacks:'snacks', subway:'metro', supplies:'kantoor', taxi:'taxi', telephone:'telefoon', phone:'telefoon', tips:'fooien', tolls:'tol', toll:'tol', train:'trein' };
+const BET_WOORDEN = [[/american|amex/i,'amex'],[/master/i,'mastercard'],[/visa/i,'visa'],[/credit/i,'creditcard'],[/cash|contant/i,'contant'],[/pin|debit|maestro/i,'pinpas'],[/ideal/i,'ideal'],[/overb|transfer|bank/i,'overboeking'],[/cheque|check/i,'cheque'],[/prepaid|vooruit/i,'vooruit']];
+const CSV_VELDEN = [
+  ['datum', 'Datum', /datum|date|^dag$|^day$/i],
+  ['bedrag', 'Bedrag', /bedrag|amount|totaal|total|kosten|cost|prijs|price/i],
+  ['soort', 'Soort', /soort|type|uitgave|expense/i],
+  ['categorie', 'Categorie', /categor|rapport|report|project|klant|client|reis|trip/i],
+  ['valuta', 'Valuta', /valuta|currency|munt/i],
+  ['koers', 'Koers', /koers|rate|wissel/i],
+  ['betaling', 'Betaling', /betal|payment|paid|pay/i],
+  ['leverancier', 'Leverancier', /leverancier|vendor|winkel|merchant|payee|bedrijf|supplier/i],
+  ['plaats', 'Plaats', /plaats|city|stad|locat|place/i],
+  ['deelnemers', 'Deelnemers', /deelnemer|attendee|guest|met wie/i],
+  ['notitie', 'Notitie', /notitie|note|omschrijving|descr|memo|opmerking|comment/i],
+  ['afstand', 'Afstand (km)', /afstand|distance|kilomet|\bkm\b|mile|mijl/i],
+  ['beginstand', 'Beginstand', /beginstand|begin|odometer.?start/i],
+  ['eindstand', 'Eindstand', /eindstand|eind|odometer.?end/i],
+  ['bon', 'Bon', /\bbon\b|bonnetje|receipt/i],
+  ['status', 'Status', /status/i],
+];
+class ImportFout extends Error {}
+let imp = null, importBezig = false;
+
+function isPdb(u8) {
+  if (u8.length < 78) return false;
+  for (let i = 60; i < 68; i++) if (u8[i] < 0x20 || u8[i] > 0x7e) return false;
+  const n = (u8[76] << 8) | u8[77];
+  return 78 + n * 8 <= u8.length;
+}
+function pdbKop(u8) {
+  let e = 0;
+  while (e < 32 && u8[e]) e++;
+  return { naam: new TextDecoder('windows-1252').decode(u8.subarray(0, e)), type: String.fromCharCode(...u8.subarray(60, 64)), maker: String.fromCharCode(...u8.subarray(64, 68)), records: (u8[76] << 8) | u8[77] };
+}
+function leesExpensePdb(buf) {
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), len = u8.length;
+  const dec = new TextDecoder('windows-1252');
+  const cstr = (off, max) => { const lim = Math.min(len, off + max); let e = off; while (e < lim && u8[e] !== 0) e++; return dec.decode(u8.subarray(off, e)); };
+  const appInfo = dv.getUint32(52), n = dv.getUint16(76);
+  const lijst = [];
+  for (let i = 0; i < n; i++) {
+    const o = 78 + i * 8;
+    if (o + 8 > len) break;
+    lijst.push({ i, off: dv.getUint32(o), attr: u8[o + 4], uid: (u8[o + 5] << 16) | (u8[o + 6] << 8) | u8[o + 7] });
+  }
+  const grenzen = [...new Set([...lijst.map(r => r.off), appInfo, len])].filter(x => x > 0).sort((a, b) => a - b);
+  const eindVan = off => { let lo = 0, hi = grenzen.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (grenzen[mid] > off) hi = mid; else lo = mid + 1; } return lo < grenzen.length ? grenzen[lo] : len; };
+  const cats = [], eigen = [];
+  if (appInfo && appInfo + 276 <= len) for (let k = 0; k < 16; k++) cats.push(cstr(appInfo + 2 + k * 16, 16));
+  if (appInfo && appInfo + 390 <= len) for (let k = 0; k < 4; k++) { const b = appInfo + 278 + k * 28; eigen.push({ naam: cstr(b, 16), symbool: cstr(b + 16, 4) }); }
+  const recs = [];
+  let onleesbaar = 0;
+  for (const r of lijst) {
+    if (r.attr & 0x80) continue;
+    const e = Math.min(eindVan(r.off), len);
+    if (r.off >= len || e - r.off < 7) { onleesbaar++; continue; }
+    const d = (u8[r.off] << 8) | u8[r.off + 1];
+    const y = (d >> 9) + 1904, m = (d >> 5) & 15, dag = d & 31;
+    if (m < 1 || m > 12 || dag < 1 || new Date(y, m - 1, dag).getDate() !== dag) { onleesbaar++; continue; }
+    let p = r.off + 6;
+    const s = [];
+    for (let k = 0; k < 5; k++) { let q = p; while (q < e && u8[q] !== 0) q++; s.push(dec.decode(u8.subarray(p, q))); p = Math.min(e, q + 1); }
+    recs.push({
+      i: r.i, uid: r.uid, cat: r.attr & 0x0F, prive: !!(r.attr & 0x10),
+      datum: `${y}-${pad(m)}-${pad(dag)}`, type: u8[r.off + 2], betaling: u8[r.off + 3], valuta: u8[r.off + 4],
+      bedrag: s[0].trim(), leverancier: s[1], plaats: s[2], deelnemers: s[3], notitie: s[4],
+    });
+  }
+  return { cats, eigen, recs, onleesbaar };
+}
+function leesTekst(buf) {
+  let t = new TextDecoder('utf-8').decode(buf);
+  if (t.includes('\uFFFD')) t = new TextDecoder('windows-1252').decode(buf);
+  return t.replace(/^﻿/, '');
+}
+function parseCsv(t) {
+  const eerste = t.split(/\r?\n/).find(r => r.trim()) || '';
+  const tel = c => eerste.split(c).length - 1;
+  const sep = [';', '\t', ','].sort((a, b) => tel(b) - tel(a))[0];
+  const rijen = [];
+  let rij = [], veld = '', q = false;
+  const sluit = () => { rij.push(veld); veld = ''; if (rij.some(v => v.trim())) rijen.push(rij); rij = []; };
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (q) { if (c === '"') { if (t[i + 1] === '"') { veld += '"'; i++; } else q = false; } else veld += c; }
+    else if (c === '"' && veld === '') q = true;
+    else if (c === sep) { rij.push(veld); veld = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; sluit(); }
+    else veld += c;
+  }
+  sluit();
+  return rijen;
+}
+function parseDatum(s, fmtKeuze) {
+  s = String(s || '').trim();
+  if (!s) return '';
+  if (/^\d{5}(\.\d+)?$/.test(s)) { const d = new Date(Date.UTC(1899, 11, 30) + Math.floor(Number(s)) * 86400000); return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`; }
+  const m = s.match(/^(\d{1,4})[-\/.](\d{1,2})[-\/.](\d{1,4})/);
+  if (!m) return '';
+  let y, mo, d;
+  if (m[1].length === 4) { y = +m[1]; mo = +m[2]; d = +m[3]; }
+  else if (fmtKeuze === 'mdy') { mo = +m[1]; d = +m[2]; y = +m[3]; }
+  else { d = +m[1]; mo = +m[2]; y = +m[3]; }
+  if (y < 100) y += y < 70 ? 2000 : 1900;
+  const dt = new Date(y, mo - 1, d);
+  if (dt.getMonth() !== mo - 1 || dt.getDate() !== d) return '';
+  return `${y}-${pad(mo)}-${pad(d)}`;
+}
+function raadDatumFmt(waarden) {
+  for (const w of waarden) {
+    const m = String(w).trim().match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.]\d{2,4}/);
+    if (m) { if (+m[1] > 12) return 'dmy'; if (+m[2] > 12) return 'mdy'; }
+  }
+  return 'dmy';
+}
+function fnv(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); }
+function catVoor(naam, cats, passenNiet) {
+  naam = (naam || '').trim().slice(0, 24);
+  if (!naam) return 'algemeen';
+  const hit = cats.find(c => c.naam.toLowerCase() === naam.toLowerCase());
+  if (hit) return hit.id;
+  if (cats.length >= MAX_CATS) { passenNiet.add(naam); return 'algemeen'; }
+  const c = { id: 'c' + Date.now().toString(36) + cats.length, naam };
+  cats.push(c);
+  return c.id;
+}
+function zoekSoort(tekst, eigen) {
+  const k = tekst.trim().toLowerCase();
+  if (!k) return 'overig';
+  const s = [...SOORTEN, ...eigen].find(x => x.naam.toLowerCase() === k || (x.lang || '').toLowerCase() === k || x.id === k);
+  return s ? s.id : (ENGELS_SOORT[k] || null);
+}
+function zoekValuta(tekst, bedragTekst) {
+  const t = String(tekst || '').trim().toUpperCase();
+  if (/^[A-Z]{3}$/.test(t)) return t;
+  const bron = t || String(bedragTekst || '');
+  if (/€/.test(bron)) return 'EUR';
+  if (/£/.test(bron)) return 'GBP';
+  if (/ƒ|\bFL\b/i.test(bron)) return 'NLG';
+  if (/¥/.test(bron)) return 'JPY';
+  if (/\$/.test(bron)) return 'USD';
+  return state.inst.valuta;
+}
+const leesStatus = t => /vergoed|paid|reimbursed/i.test(t) ? 'vergoed' : /gedeclareerd|submitted/i.test(t) ? 'gedeclareerd' : /priv/i.test(t) ? 'prive' : 'open';
+const zonderQuote = v => /^'[=+\-@]/.test(v) ? v.slice(1) : v;
+
+function planPalm() {
+  const { pdb } = imp;
+  const cats = state.inst.categorieen.map(c => ({ ...c })), passenNiet = new Set(), catMap = {};
+  for (const idx of [...new Set(pdb.recs.map(r => r.cat))]) catMap[idx] = idx === 0 ? 'algemeen' : catVoor(pdb.cats[idx], cats, passenNiet);
+  const al = new Set(state.posten.map(p => p.id)), items = [], nu = new Date().toISOString();
+  let overgeslagen = 0;
+  for (const r of pdb.recs) {
+    const id = r.uid ? 'palm-' + r.uid.toString(16).padStart(6, '0') : 'palm-i' + r.i;
+    if (al.has(id)) { overgeslagen++; continue; }
+    const soort = PALM_SOORT[r.type] || 'overig', waarde = parseGetal(r.bedrag);
+    const post = {
+      datum: r.datum, soort, bedrag: Number.isFinite(waarde) ? round2(waarde) : 0, valuta: imp.valuta[r.valuta] || state.inst.valuta,
+      betaling: PALM_BETALING[r.betaling] || 'onbepaald', categorie: catMap[r.cat] || 'algemeen', bon: false, status: 'open',
+      leverancier: r.leverancier.trim(), plaats: r.plaats.trim(), deelnemers: r.deelnemers.trim(), notitie: r.notitie.trim(),
+      aangemaakt: nu, bron: 'palm',
+    };
+    if (r.bedrag && !Number.isFinite(waarde)) post.notitie = (post.notitie ? post.notitie + '\n' : '') + 'Bedrag op de Palm: ' + r.bedrag;
+    if (soort === 'kilometers') {
+      const km = Number.isFinite(waarde) ? (imp.eenheid === 'mijl' ? waarde * 1.609344 : waarde) : 0;
+      post.afstand = round1(km);
+      post.kmTarief = imp.tarief;
+      post.bedrag = round2(post.afstand * imp.tarief);
+      post.valuta = state.inst.valuta;
+    }
+    items.push({ id, data: naarData(post) });
+  }
+  return { cats, nieuweCats: cats.length !== state.inst.categorieen.length, passenNiet, eigen: state.inst.eigenSoorten, nieuweSoorten: false, items, overgeslagen, ruimte: MAX_DOCS - 1 - state.posten.length };
+}
+function planCsv() {
+  const { rijen, map } = imp;
+  const celW = (r, veld) => map[veld] != null ? zonderQuote(String(r[map[veld]] ?? '').trim()) : '';
+  const cats = state.inst.categorieen.map(c => ({ ...c })), passenNiet = new Set();
+  const eigen = state.inst.eigenSoorten.map(s => ({ ...s }));
+  const al = new Set(state.posten.map(p => p.id)), gezien = new Map(), items = [], nu = new Date().toISOString();
+  let overgeslagen = 0, onbruikbaar = 0;
+  for (const r of rijen) {
+    const datum = parseDatum(celW(r, 'datum'), imp.datumFmt);
+    const ruwBedrag = celW(r, 'bedrag');
+    let bedrag = parseGetal(ruwBedrag);
+    const soortTekst = celW(r, 'soort');
+    let soort = soortTekst ? zoekSoort(soortTekst, eigen) : 'overig';
+    if (!soort) {
+      if (eigen.length < MAX_EIGEN) { const s = { id: 'e-' + Date.now().toString(36) + eigen.length, naam: soortTekst.slice(0, 30), icoon: 'stippen' }; eigen.push(s); soort = s.id; }
+      else soort = 'overig';
+    }
+    const afstand = parseGetal(celW(r, 'afstand'));
+    if (!datum || (!Number.isFinite(bedrag) && !(soort === 'kilometers' && afstand > 0))) { onbruikbaar++; continue; }
+    const betTekst = celW(r, 'betaling');
+    const post = {
+      datum, soort, bedrag: Number.isFinite(bedrag) ? round2(bedrag) : 0, valuta: zoekValuta(celW(r, 'valuta'), ruwBedrag),
+      betaling: (BET_WOORDEN.find(([re]) => re.test(betTekst)) || [0, 'onbepaald'])[1],
+      categorie: catVoor(celW(r, 'categorie'), cats, passenNiet),
+      bon: /^(ja|j|yes|y|x|1|true|waar|✓)$/i.test(celW(r, 'bon')), status: leesStatus(celW(r, 'status')),
+      leverancier: celW(r, 'leverancier'), plaats: celW(r, 'plaats'), deelnemers: celW(r, 'deelnemers'), notitie: celW(r, 'notitie'),
+      aangemaakt: nu, bron: 'csv',
+    };
+    const k = parseGetal(celW(r, 'koers'));
+    if (k > 0 && post.valuta !== state.inst.valuta) { post.koers = k; post.koersNaar = state.inst.valuta; }
+    if (soort === 'kilometers') {
+      if (afstand > 0) post.afstand = round1(afstand);
+      const b = parseGetal(celW(r, 'beginstand')), e = parseGetal(celW(r, 'eindstand'));
+      if (Number.isFinite(b)) post.beginstand = b;
+      if (Number.isFinite(e)) post.eindstand = e;
+      if (!Number.isFinite(bedrag) && post.afstand) { post.kmTarief = state.inst.kmTarief; post.bedrag = round2(post.afstand * post.kmTarief); post.valuta = state.inst.valuta; }
+    }
+    const sleutel = [datum, soort, post.bedrag, post.valuta, post.leverancier, post.notitie].join('|');
+    const n = (gezien.get(sleutel) || 0) + 1;
+    gezien.set(sleutel, n);
+    const id = 'csv-' + fnv(sleutel + '#' + n);
+    if (al.has(id)) { overgeslagen++; continue; }
+    items.push({ id, data: naarData(post), post });
+  }
+  return { cats, nieuweCats: cats.length !== state.inst.categorieen.length, passenNiet, eigen, nieuweSoorten: eigen.length !== state.inst.eigenSoorten.length, items, overgeslagen, onbruikbaar, ruimte: MAX_DOCS - 1 - state.posten.length };
+}
+
+function toonStap(naam) {
+  for (const s of ['Kies', 'Palm', 'Csv', 'Onb', 'Bezig']) F('imp' + s).hidden = s.toLowerCase() !== naam;
+  F('impGo').hidden = !['palm', 'csv'].includes(naam);
+  F('impStuur').hidden = naam !== 'onb' || LOKAAL;
+  F('impAnders').hidden = !['palm', 'csv', 'onb'].includes(naam);
+  F('impOnbBox').hidden = LOKAAL || !(['palm', 'csv'].includes(naam) && imp && imp.onbekend.length);
+  F('impClose').textContent = naam === 'bezig' ? 'Klaar' : 'Annuleren';
+}
+function openImport() {
+  if (!importBezig) {
+    imp = null;
+    F('impFile').value = '';
+    F('impErr').textContent = ''; F('impOk').textContent = '';
+    F('impStuur').disabled = F('impOnbStuur').disabled = false;
+    toonStap('kies');
+  }
+  F('dlgImp').showModal();
+}
+async function kiesBestanden(files) {
+  files = [...(files || [])];
+  F('impErr').textContent = ''; F('impOk').textContent = '';
+  if (!files.length) return;
+  try {
+    const palm = [], csv = [], onbekend = [];
+    for (const f of files) {
+      if (f.size > 16 * 1024 * 1024) throw new ImportFout(`${f.name} is te groot. Kies een Palm-database of een CSV-bestand.`);
+      const buf = await f.arrayBuffer(), u8 = new Uint8Array(buf);
+      if (isPdb(u8)) { const kop = pdbKop(u8); if (kop.maker === 'exps' && kop.type === 'DATA') palm.push({ f, buf }); else onbekend.push({ f, buf, kop }); }
+      else csv.push({ f, buf });
+    }
+    imp = { onbekend };
+    const extra = palm.length + csv.length > 1 ? ` Ik neem nu ${palm.length ? palm[0].f.name : csv[0].f.name}; importeer de andere daarna apart.` : '';
+    if (palm.length) {
+      const pdb = leesExpensePdb(palm[0].buf);
+      if (!pdb.recs.length) throw new ImportFout('Er staan geen posten in ' + palm[0].f.name + '.');
+      Object.assign(imp, { soort: 'palm', pdb, bestand: palm[0].f.name, valuta: {}, eenheid: 'km', tarief: state.inst.kmTarief });
+      for (const r of pdb.recs) if (!(r.valuta in imp.valuta)) imp.valuta[r.valuta] = raadValuta(r.valuta);
+      renderPalm();
+      toonStap('palm');
+    } else if (csv.length) {
+      const rijen = parseCsv(leesTekst(csv[0].buf));
+      if (rijen.length < 2) throw new ImportFout(`In ${csv[0].f.name} staan geen rijen met gegevens. Kies een Palm-database (.pdb) of een CSV-bestand met een kopregel.`);
+      const kop = rijen[0].map(h => h.trim());
+      Object.assign(imp, { soort: 'csv', bestand: csv[0].f.name, kop, rijen: rijen.slice(1), map: {} });
+      const bezet = new Set();
+      for (const [veld, , re] of CSV_VELDEN) { const i = kop.findIndex((h, j) => !bezet.has(j) && re.test(h)); if (i > -1) { imp.map[veld] = i; bezet.add(i); } }
+      imp.datumFmt = raadDatumFmt(imp.map.datum != null ? imp.rijen.map(r => r[imp.map.datum]) : []);
+      renderCsv();
+      toonStap('csv');
+    } else {
+      imp.soort = 'onb';
+      const ul = F('impOnbLijst');
+      ul.replaceChildren(...onbekend.map(({ f, kop }) => el('li', null, `${kop.naam || f.name} · maker ${kop.maker} · ${kop.records} records`)));
+      toonStap('onb');
+    }
+    if (onbekend.length && imp.soort !== 'onb') F('impOnbTekst').textContent = `Daarnaast ${onbekend.length === 1 ? 'is er 1 database' : `zijn er ${onbekend.length} databases`} van een ander programma, bijvoorbeeld ExpensePlus: ${onbekend.map(o => o.kop.naam || o.f.name).join(', ')}.`;
+    if (extra) F('impOk').textContent = extra.trim();
+  } catch (e) {
+    console.error(e);
+    F('impErr').textContent = e instanceof ImportFout ? e.message : 'Deze bestanden kon ik niet lezen. Kies een Palm-database (.pdb) of een CSV-bestand.';
+  }
+}
+function valutaNaam(code) {
+  if (code >= 128 && code <= 131) {
+    const c = imp.pdb.eigen[code - 128];
+    if (c && (c.naam || c.symbool)) return `Eigen valuta “${[c.naam, c.symbool].filter(Boolean).join(' ')}”`;
+    return `Eigen valuta ${code - 127}`;
+  }
+  return `Valuta nr. ${code}`;
+}
+function raadValuta(code) {
+  const c = code >= 128 && code <= 131 ? imp.pdb.eigen[code - 128] : null;
+  const t = c ? `${c.naam} ${c.symbool}`.toLowerCase() : '';
+  if (/euro|€|\beur\b/.test(t)) return 'EUR';
+  if (/gulden|guilder|ƒ|\bfl\b|nlg/.test(t)) return 'NLG';
+  if (/pound|pond|£|gbp/.test(t)) return 'GBP';
+  if (/dollar|\$|usd/.test(t)) return 'USD';
+  if (/franc|frank|chf/.test(t)) return 'CHF';
+  return state.inst.valuta;
+}
+function renderPalm() {
+  const { pdb } = imp, plan = planPalm(), recs = pdb.recs;
+  const jaren = recs.map(r => r.datum.slice(0, 4)).sort();
+  F('impKop').textContent = `${imp.bestand} · ${aantal(recs.length)} · ${jaren[0] === jaren[jaren.length - 1] ? jaren[0] : jaren[0] + '–' + jaren[jaren.length - 1]}`;
+  const info = F('impInfo');
+  info.replaceChildren();
+  const kv = (k, v) => info.append(el('dt', null, k), el('dd', null, v));
+  kv('Nieuw:', aantal(plan.items.length));
+  if (plan.overgeslagen) kv('Al binnen:', `${aantal(plan.overgeslagen)}, die sla ik over`);
+  const perCat = new Map();
+  for (const r of recs) { const k = r.cat === 0 ? 'Algemeen' : (pdb.cats[r.cat] || '').trim() || 'Algemeen'; perCat.set(k, (perCat.get(k) || 0) + 1); }
+  kv('Categorieën:', [...perCat].sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} (${v})`).join(', '));
+  const perSoort = new Map();
+  for (const r of recs) { const k = soortNaam(PALM_SOORT[r.type] || 'overig'); perSoort.set(k, (perSoort.get(k) || 0) + 1); }
+  const top = [...perSoort].sort((a, b) => b[1] - a[1]);
+  kv('Soorten:', top.slice(0, 6).map(([k, v]) => `${k} (${v})`).join(', ') + (top.length > 6 ? ` en ${top.length - 6} andere` : ''));
+  const prive = recs.filter(r => r.prive).length;
+  if (prive) kv('Privé:', prive === 1 ? '1 post die op de Palm verborgen was, komt ook mee' : `${prive} posten die op de Palm verborgen waren, komen ook mee`);
+  if (pdb.onleesbaar) kv('Onleesbaar:', `${aantal(pdb.onleesbaar)}, die sla ik over`);
+  const box = F('impValuta');
+  box.replaceChildren();
+  const codes = new Map();
+  for (const r of recs) { if (!codes.has(r.valuta)) codes.set(r.valuta, { n: 0, vb: r }); codes.get(r.valuta).n++; }
+  for (const [code, { n, vb }] of [...codes].sort((a, b) => b[1].n - a[1].n)) {
+    const rijEl = el('div', 'maprow'), wat = el('div', 'wat');
+    wat.append(el('b', null, valutaNaam(code)), document.createTextNode(` · ${aantal(n)}`), el('span', 'vb2', `bv. ${vb.bedrag || '0'} · ${soortNaam(PALM_SOORT[vb.type] || 'overig')} · ${datumNL(vb.datum)}`));
+    const pop = el('span', 'popup'), sel = el('select');
+    sel.id = 'impCur-' + code;
+    sel.setAttribute('aria-label', `Valuta voor ${valutaNaam(code)}`);
+    vulSelect(sel, VALUTA, imp.valuta[code]);
+    sel.addEventListener('change', () => { imp.valuta[code] = sel.value; });
+    pop.append(sel);
+    rijEl.append(wat, pop);
+    box.append(rijEl);
+  }
+  const ritten = recs.filter(r => PALM_SOORT[r.type] === 'kilometers').length;
+  F('impKm').hidden = !ritten;
+  if (ritten) {
+    $$('#impKm [data-eenheid]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.eenheid === imp.eenheid)));
+    F('impTarief').value = invoer(imp.tarief);
+  }
+  const noten = [];
+  if (ritten) noten.push(`Bij ${aantal(ritten)} van het soort Mileage staat op de Palm de afstand in plaats van een bedrag. Die worden ritten met de vergoeding hierboven.`);
+  if (plan.nieuweCats) noten.push(`Nieuwe categorieën: ${plan.cats.slice(state.inst.categorieen.length).map(c => c.naam).join(', ')}.`);
+  if (plan.passenNiet.size) noten.push(`${[...plan.passenNiet].join(', ')} ${plan.passenNiet.size === 1 ? 'past' : 'passen'} niet meer (maximaal ${MAX_CATS} categorieën); die posten gaan naar Algemeen.`);
+  F('impNoot').textContent = noten.join(' ');
+  zetImportKnop(plan);
+}
+function zetImportKnop(plan) {
+  const teVeel = plan.items.length > plan.ruimte;
+  F('impErr').textContent = teVeel ? `Er passen nog ${plan.ruimte} posten in het boekje, dit bestand heeft er ${plan.items.length}. Verwijder eerst oude posten.` : '';
+  F('impGo').textContent = plan.items.length ? `Importeer ${aantal(plan.items.length)}` : 'Niets nieuws';
+  F('impGo').disabled = !plan.items.length || teVeel;
+}
+function renderCsv() {
+  F('csvKop').textContent = `${imp.bestand} · ${imp.rijen.length} ${imp.rijen.length === 1 ? 'rij' : 'rijen'}`;
+  const box = F('csvMap');
+  box.replaceChildren();
+  for (const [veld, label] of CSV_VELDEN) {
+    const f = el('div', 'f'), lab = el('label', null, label + ':'), pop = el('span', 'popup'), sel = el('select');
+    sel.id = 'csv-' + veld;
+    lab.htmlFor = sel.id;
+    vulSelect(sel, [['', '— niet —'], ...imp.kop.map((h, i) => [String(i), h || `Kolom ${i + 1}`])], imp.map[veld] != null ? String(imp.map[veld]) : '');
+    sel.addEventListener('change', () => { if (sel.value === '') delete imp.map[veld]; else imp.map[veld] = Number(sel.value); renderCsvVoorbeeld(); });
+    pop.append(sel);
+    f.append(lab, pop);
+    box.append(f);
+  }
+  renderCsvVoorbeeld();
+}
+function renderCsvVoorbeeld() {
+  $$('#impCsv [data-fmt]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.fmt === imp.datumFmt)));
+  const plan = planCsv(), t = F('csvTabel');
+  t.replaceChildren();
+  const thead = el('thead'), hr = el('tr');
+  ['Datum', 'Soort', { t: 'Bedrag', n: true }, 'Leverancier', 'Categorie'].forEach(c => hr.append(cel('th', c)));
+  thead.append(hr);
+  const tbody = el('tbody'), catNaamIn = id => plan.cats.find(c => c.id === id)?.naam || 'Algemeen';
+  const soortIn = id => SOORT[id]?.naam || plan.eigen.find(s => s.id === id)?.naam || id;
+  for (const { post } of plan.items.slice(0, 6)) {
+    const tr = el('tr');
+    [datumNL(post.datum), soortIn(post.soort), { t: geld(post.bedrag, post.valuta), n: true }, post.leverancier, catNaamIn(post.categorie)].forEach(c => tr.append(cel('td', c)));
+    tbody.append(tr);
+  }
+  if (!plan.items.length) { const tr = el('tr'), td = el('td', 'leeg', 'Nog geen bruikbare rijen. Kies bij Datum en Bedrag de juiste kolom.'); td.colSpan = 5; tr.append(td); tbody.append(tr); }
+  t.append(thead, tbody);
+  const noten = [`${cap(aantal(plan.items.length))} nieuw.`];
+  if (plan.overgeslagen) noten.push(`${cap(aantal(plan.overgeslagen))} stonden er al in.`);
+  if (plan.onbruikbaar) noten.push(`${plan.onbruikbaar} ${plan.onbruikbaar === 1 ? 'rij heeft' : 'rijen hebben'} geen geldige datum of bedrag en ${plan.onbruikbaar === 1 ? 'wordt' : 'worden'} overgeslagen.`);
+  if (plan.nieuweSoorten) noten.push(`Nieuwe eigen soorten: ${plan.eigen.slice(state.inst.eigenSoorten.length).map(s => s.naam).join(', ')}.`);
+  if (plan.nieuweCats) noten.push(`Nieuwe categorieën: ${plan.cats.slice(state.inst.categorieen.length).map(c => c.naam).join(', ')}.`);
+  if (plan.passenNiet.size) noten.push(`${[...plan.passenNiet].join(', ')} ${plan.passenNiet.size === 1 ? 'past' : 'passen'} niet meer (maximaal ${MAX_CATS} categorieën); die posten gaan naar Algemeen.`);
+  F('csvNoot').textContent = noten.join(' ');
+  zetImportKnop(plan);
+}
+$$('#impCsv [data-fmt]').forEach(b => b.addEventListener('click', () => { imp.datumFmt = b.dataset.fmt; renderCsvVoorbeeld(); }));
+function naarBase64(buf) {
+  const u8 = new Uint8Array(buf);
+  let s = '';
+  for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+async function stuurNaarClaude(knop) {
+  const lijst = imp?.onbekend || [];
+  if (!lijst.length) return;
+  F('impErr').textContent = ''; F('impOk').textContent = '';
+  let assets = null;
+  try { assets = window.claude && window.claude.use ? await window.claude.use('assets') : null; } catch { assets = null; }
+  if (!assets || !store.db) { F('impErr').textContent = 'Versturen werkt niet in deze weergave. Open het boekje op claude.ai en probeer het daar opnieuw.'; return; }
+  knop.disabled = true;
+  F('impOk').textContent = 'Bezig met versturen…';
+  try {
+    for (const { f, buf, kop } of lijst) {
+      const blob = new Blob([JSON.stringify({ bestand: f.name, ...kop, grootte: buf.byteLength, base64: naarBase64(buf) })], { type: 'application/json' });
+      const r = await assets.upload(blob, { type: 'application/json' });
+      await store.db.collection('bestanden').doc().set({ bestand: f.name, naam: kop.naam, maker: kop.maker, type: kop.type, records: kop.records, grootte: buf.byteLength, asset: r.id, verstuurd: new Date().toISOString() });
+    }
+    F('impOk').textContent = `${lijst.length === 1 ? 'Het bestand staat' : `De ${lijst.length} bestanden staan`} klaar. Laat Claude in het gesprek weten dat ze er zijn; dan kan de import erbij worden gebouwd.`;
+  } catch (e) {
+    console.error(e);
+    knop.disabled = false;
+    F('impOk').textContent = '';
+    const code = e && e.code;
+    F('impErr').textContent = code === 'quota_or_state' ? 'Er is geen ruimte meer om bestanden te bewaren.' : code === 'too_large' ? 'Een van de bestanden is te groot om te versturen.' : code === 'rate_limited' ? 'Even te vaak geprobeerd. Wacht een minuut en probeer het opnieuw.' : 'Versturen lukte niet. Probeer het opnieuw.';
+  }
+}
+F('impStuur').addEventListener('click', () => stuurNaarClaude(F('impStuur')));
+F('impOnbStuur').addEventListener('click', () => stuurNaarClaude(F('impOnbStuur')));
+F('impFile').addEventListener('change', e => kiesBestanden(e.target.files));
+const drop = F('impDrop');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); kiesBestanden(e.dataTransfer && e.dataTransfer.files); });
+$$('#impKm [data-eenheid]').forEach(b => b.addEventListener('click', () => {
+  imp.eenheid = b.dataset.eenheid;
+  $$('#impKm [data-eenheid]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.eenheid === imp.eenheid)));
+}));
+F('impAnders').addEventListener('click', () => { imp = null; F('impFile').value = ''; F('impErr').textContent = ''; F('impOk').textContent = ''; F('impStuur').disabled = F('impOnbStuur').disabled = false; toonStap('kies'); });
+F('dlgImp').addEventListener('cancel', e => { if (importBezig) e.preventDefault(); });
+F('impGo').addEventListener('click', async () => {
+  if (!imp || importBezig || !['palm', 'csv'].includes(imp.soort)) return;
+  if (imp.soort === 'palm' && !F('impKm').hidden) {
+    const t = parseGetal(F('impTarief').value);
+    if (!(t >= 0 && t < 10)) { F('impErr').textContent = 'Vul een vergoeding per km in tussen 0 en 10, bijvoorbeeld 0,23.'; F('impTarief').focus(); return; }
+    imp.tarief = Math.round(t * 1000) / 1000;
+  }
+  const plan = imp.soort === 'palm' ? planPalm() : planCsv();
+  if (!plan.items.length || plan.items.length > plan.ruimte) return;
+  importBezig = true;
+  F('impErr').textContent = ''; F('impOk').textContent = '';
+  toonStap('bezig');
+  F('impClose').disabled = true;
+  const totaal = plan.items.length;
+  const voortgang = k => { F('impVoortgang').textContent = `Bezig met overzetten: ${k} van ${totaal}…`; F('impMeter').style.width = (k / totaal * 100) + '%'; };
+  voortgang(0);
+  try {
+    if (plan.nieuweCats || plan.nieuweSoorten) await metBackoff(() => store.zetInst({ ...state.inst, categorieen: plan.cats, eigenSoorten: plan.eigen }));
+    await schrijfPosten(plan.items, voortgang);
+    F('impVoortgang').textContent = `${cap(aantal(totaal))} staan nu in het boekje.` + (plan.overgeslagen ? ` ${cap(aantal(plan.overgeslagen))} stonden er al in.` : '');
+    state.view.mode = 'alles'; state.view.cat = 'alle';
+    bewaarView();
+    render();
+  } catch (e) {
+    console.error(e);
+    F('impVoortgang').textContent = `Gestopt na ${e.gedaan || 0} van ${totaal}. ${foutTekst(e)} Importeer hetzelfde bestand nog een keer om verder te gaan; wat al binnen is, sla ik over.`;
+  } finally {
+    importBezig = false;
+    F('impClose').disabled = false;
+  }
+});
+
+/* ---------- budgets ---------- */
+// A budget is a monthly amount. Deductions are ordinary posts with a `budget` field;
+// top-ups ("bijstorten") live in the `stortingen` collection so they never count as spending.
+const ui = { open: new Set(), edit: null, inTeken: 'af', snelTeken: 'af', laatste: null };
+const budgetInfo = id => (id && state.inst.budgetten.find(b => b.id === id)) || null;
+const budgetIcoon = b => b.soort ? soortIcoon(b.soort) : 'munt';
+const maandIdx = mk => Number(mk.slice(0, 4)) * 12 + Number(mk.slice(5, 7)) - 1;
+const huidigeMaand = () => `${state.view.y}-${pad(state.view.m)}`;
+const metTeken = (c, plus) => (c < 0 ? '−' : plus ? '+' : '') + geld(Math.abs(c) / 100, state.inst.valuta);
+function budgetStand(b, mk) {
+  const eigenPosten = state.posten.filter(p => p.budget === b.id);
+  const eigenSt = state.stortingen.filter(s => s.budget === b.id);
+  const uitVan = arr => arr.reduce((a, p) => a + (inHoofd(p) ?? 0), 0);
+  const bijVan = arr => arr.reduce((a, s) => a + centen(s.bedrag), 0);
+  const deze = x => x.datum.startsWith(mk);
+  const bud = centen(b.bedrag), uit = uitVan(eigenPosten.filter(deze)), bij = bijVan(eigenSt.filter(deze));
+  let over = bud + bij - uit;
+  if (b.meenemen && b.start && maandIdx(mk) >= maandIdx(b.start)) {
+    const s0 = maandIdx(b.start), s1 = maandIdx(mk);
+    const binnen = x => { const k = maandIdx(x.datum.slice(0, 7)); return k >= s0 && k <= s1; };
+    over = (s1 - s0 + 1) * bud + bijVan(eigenSt.filter(binnen)) - uitVan(eigenPosten.filter(binnen));
+  }
+  return { bud, uit, bij, over };
+}
+function datumInMaand(mk) {
+  const t = vandaag();
+  if (t.startsWith(mk)) return t;
+  return iso(new Date(Number(mk.slice(0, 4)), Number(mk.slice(5, 7)), 0));
+}
+function mutaties(bid, mk) {
+  const posten = state.posten.filter(p => p.budget === bid && p.datum.startsWith(mk)).map(p => ({
+    soort: 'post', id: p.id, datum: p.datum, aangemaakt: p.aangemaakt, bedrag: -(inHoofd(p) ?? 0),
+    tekst: p.notitie.split('\n')[0] || p.leverancier || (p.soort !== 'overig' ? soortNaam(p.soort) : 'Afgeboekt'),
+  }));
+  const stortingen = state.stortingen.filter(s => s.budget === bid && s.datum.startsWith(mk)).map(s => ({
+    soort: 'storting', id: s.id, datum: s.datum, aangemaakt: s.aangemaakt, bedrag: centen(s.bedrag), tekst: s.notitie || 'Bijgestort',
+  }));
+  return [...posten, ...stortingen].sort((a, b) => b.datum.localeCompare(a.datum) || (b.aangemaakt || '').localeCompare(a.aangemaakt || ''));
+}
+async function verwerk(b, ruw, notitie, teken, errEl) {
+  ruw = String(ruw).trim().replace(/^−/, '-');
+  if (ruw.startsWith('+')) teken = 'bij';
+  else if (ruw.startsWith('-')) teken = 'af';
+  const n = Math.abs(parseGetal(ruw));
+  if (!b) { errEl.textContent = 'Kies een budget.'; return false; }
+  if (!(n > 0)) { errEl.textContent = 'Vul een bedrag in, bijvoorbeeld 25.'; return false; }
+  errEl.textContent = '';
+  const bedrag = round2(n), datum = datumInMaand(huidigeMaand()), tekst = notitie.trim(), nu = new Date().toISOString();
+  try {
+    if (teken === 'bij') {
+      const id = store.nieuwStortingId();
+      await store.zetStorting(id, { budget: b.id, bedrag, datum, notitie: tekst, aangemaakt: nu });
+      ui.laatste = { soort: 'storting', id, tekst: `${metTeken(centen(bedrag), true)} bij ${b.naam}${tekst ? ' · ' + tekst : ''}` };
+    } else {
+      const id = store.nieuwId();
+      await store.zetPost(id, naarData({
+        datum, soort: b.soort || 'overig', bedrag, valuta: state.inst.valuta, betaling: 'onbepaald',
+        categorie: catIds().includes('prive') ? 'prive' : 'algemeen', bon: false, status: 'prive',
+        leverancier: '', plaats: '', deelnemers: '', notitie: tekst, aangemaakt: nu, budget: b.id,
+      }));
+      ui.laatste = { soort: 'post', id, tekst: `${metTeken(-centen(bedrag))} van ${b.naam}${tekst ? ' · ' + tekst : ''}` };
+    }
+    onthoud('budget', b.id);
+    return true;
+  } catch (e) {
+    console.error(e);
+    errEl.textContent = foutTekst(e);
+    return false;
+  }
+}
+function tekenKnoppen(huidig, zet) {
+  const push = el('div', 'push teken');
+  push.setAttribute('role', 'group');
+  push.setAttribute('aria-label', 'Afboeken of bijstorten');
+  for (const [k, t, l] of [['af', '−', 'Afboeken'], ['bij', '+', 'Bijstorten']]) {
+    const b = el('button', null, t);
+    b.type = 'button';
+    b.setAttribute('aria-label', l);
+    b.setAttribute('aria-pressed', String(huidig === k));
+    b.addEventListener('click', () => { $$('button', push).forEach(x => x.setAttribute('aria-pressed', String(x === b))); zet(k); });
+    push.append(b);
+  }
+  return push;
+}
+function inlineAfboeken(b) {
+  const f = el('form', 'bud-in');
+  f.noValidate = true;
+  f.dataset.bid = b.id;
+  const r = el('div', 'r'), bedrag = el('input'), ok = el('button', 'btn', 'OK'), x = el('button', 'x', '×');
+  bedrag.id = 'inB-' + b.id; bedrag.className = 'bedr'; bedrag.inputMode = 'decimal'; bedrag.autocomplete = 'off'; bedrag.placeholder = '25,00';
+  bedrag.setAttribute('aria-label', `Bedrag voor ${b.naam}`);
+  ok.type = 'submit';
+  x.type = 'button';
+  x.setAttribute('aria-label', 'Sluiten');
+  x.addEventListener('click', () => { ui.edit = null; renderBudget(); });
+  r.append(tekenKnoppen(ui.inTeken, k => { ui.inTeken = k; bedrag.focus(); }), bedrag, ok, x);
+  const noti = el('input'), err = el('p', 'err');
+  noti.id = 'inN-' + b.id; noti.className = 'noti'; noti.maxLength = 80; noti.autocomplete = 'off'; noti.placeholder = 'Waarvoor? Bijv. autowassen';
+  noti.setAttribute('aria-label', 'Waarvoor');
+  err.setAttribute('role', 'alert');
+  f.append(r, noti, err);
+  f.addEventListener('submit', async e => {
+    e.preventDefault();
+    ok.disabled = true;
+    const gelukt = await verwerk(b, bedrag.value, noti.value, ui.inTeken, err);
+    ok.disabled = false;
+    if (gelukt) { ui.edit = null; renderBudget(); }
+  });
+  f.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); ui.edit = null; renderBudget(); } });
+  return f;
+}
+function historieLijst(b, mk) {
+  const ul = el('ul', 'bud-hist'), lijst = mutaties(b.id, mk);
+  if (!lijst.length) ul.append(el('li', 'leeg', `Nog niets afgeboekt in ${MAANDEN[Number(mk.slice(5, 7)) - 1]}.`));
+  for (const m of lijst) {
+    const li = el('li'), knop = el('button');
+    knop.type = 'button';
+    knop.append(el('span', null, datumKort(m.datum)), el('span', 't', m.tekst), el('span', null, metTeken(m.bedrag, true)));
+    knop.addEventListener('click', () => m.soort === 'post' ? openPost(m.id) : vraagWisStorting(m, b));
+    li.append(knop);
+    ul.append(li);
+  }
+  return ul;
+}
+async function vraagWisStorting(m, b) {
+  const ok = await ask({ title: 'Bijstorting verwijderen', icon: '?', msg: `${metTeken(m.bedrag, true)} bij ${b.naam} van ${datumNL(m.datum)} verwijderen?`, buttons: [{ label: 'Verwijder', value: true }, { label: 'Annuleren', value: false }] });
+  if (!ok) return;
+  try { await store.wisStorting(m.id); } catch (e) { fout(e); }
+}
+function budgetRij(b, mk) {
+  const st = budgetStand(b, mk), main = state.inst.valuta;
+  const li = el('li', 'bud'), kop = el('div', 'bud-kop'), naam = el('button', 'bud-naam');
+  naam.type = 'button';
+  naam.setAttribute('aria-expanded', String(ui.open.has(b.id)));
+  let sub = `${geld(st.uit / 100, main)} uitgegeven van ${geld(st.bud / 100, main)}`;
+  if (st.bij) sub += ` · ${metTeken(st.bij, true)} bijgestort`;
+  if (b.meenemen) sub += ' · rest gaat mee';
+  naam.append(icoon(budgetIcoon(b)), el('span', 'bud-t', b.naam), el('span', 'bud-sub', sub));
+  naam.addEventListener('click', () => { if (ui.open.has(b.id)) ui.open.delete(b.id); else ui.open.add(b.id); renderBudget(); });
+  const over = el('button', 'bud-over' + (st.over < 0 ? ' tekort' : ''), metTeken(st.over));
+  over.type = 'button';
+  over.setAttribute('aria-label', `${b.naam}: ${st.over < 0 ? 'tekort' : 'nog over'} ${metTeken(st.over)}. Tik om af te boeken.`);
+  over.addEventListener('click', () => {
+    ui.edit = ui.edit === b.id ? null : b.id;
+    ui.inTeken = 'af';
+    renderBudget();
+    if (ui.edit) F('inB-' + b.id)?.focus();
+  });
+  kop.append(naam, over);
+  const balk = el('div', 'bud-balk' + (st.over < 0 ? ' vol' : '')), vul = el('i'), beschikbaar = st.over + st.uit;
+  vul.style.width = (beschikbaar > 0 ? Math.min(100, st.uit / beschikbaar * 100) : st.uit > 0 ? 100 : 0) + '%';
+  balk.append(vul);
+  li.append(kop, balk);
+  if (ui.edit === b.id) li.append(inlineAfboeken(b));
+  if (ui.open.has(b.id)) li.append(historieLijst(b, mk));
+  return li;
+}
+let snelSig = '';
+function renderSnel() {
+  const sel = F('snelBudget'), sig = JSON.stringify(state.inst.budgetten.map(b => [b.id, b.naam]));
+  F('snelAf').hidden = !state.inst.budgetten.length;
+  if (sig === snelSig) return;
+  const oud = sel.value;
+  snelSig = sig;
+  vulSelect(sel, state.inst.budgetten.map(b => [b.id, b.naam]));
+  const keuze = [oud, onthoud('budget')].find(id => budgetInfo(id));
+  if (keuze) sel.value = keuze;
+}
+function renderBudget() {
+  const list = F('budList'), oud = list.querySelector('.bud-in');
+  let bewaar = null;
+  if (oud) {
+    const [b, n] = $$('input', oud);
+    bewaar = { bid: oud.dataset.bid, b: b.value, n: n.value, focus: document.activeElement === b ? 0 : document.activeElement === n ? 1 : -1, err: $('.err', oud).textContent };
+  }
+  renderSnel();
+  const st = F('budStatus');
+  st.hidden = !ui.laatste;
+  if (ui.laatste) F('budStatusTekst').textContent = ui.laatste.tekst;
+  list.replaceChildren();
+  const mk = huidigeMaand(), budgetten = state.inst.budgetten;
+  if (!state.loaded) { list.append(el('li', 'empty', 'Boekje openen…')); }
+  else if (!budgetten.length) {
+    const li = el('li', 'empty');
+    const knop = el('button', 'btn', 'Nieuw budget');
+    knop.type = 'button';
+    knop.addEventListener('click', () => openBudgetten(true));
+    li.append(el('p', null, 'Nog geen budgetten. Maak er een, bijvoorbeeld Brandstof met € 100 per maand. Daarna tik je op het bedrag dat over is om er iets van af te boeken.'), knop);
+    list.append(li);
+  }
+  else for (const b of budgetten) list.append(budgetRij(b, mk));
+  let over = 0, totaal = 0;
+  for (const b of budgetten) { const s = budgetStand(b, mk); over += s.over; totaal += s.bud + s.bij; }
+  F('count').textContent = budgetten.length ? `Nog over van ${geld(totaal / 100, state.inst.valuta)}` : ' ';
+  F('sum').textContent = budgetten.length ? metTeken(over) : '';
+  if (bewaar && ui.edit === bewaar.bid) {
+    const f = list.querySelector('.bud-in');
+    if (f) {
+      const inputs = $$('input', f);
+      inputs[0].value = bewaar.b;
+      inputs[1].value = bewaar.n;
+      $('.err', f).textContent = bewaar.err;
+      if (bewaar.focus > -1) inputs[bewaar.focus].focus();
+    }
+  }
+}
+(() => {
+  const push = $('#snelAf .teken');
+  $$('button', push).forEach(b => b.addEventListener('click', () => {
+    ui.snelTeken = b.dataset.teken;
+    $$('button', push).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+    F('snelBedrag').focus();
+  }));
+})();
+F('snelAf').addEventListener('submit', async e => {
+  e.preventDefault();
+  const knop = $('#snelAf button[type="submit"]');
+  knop.disabled = true;
+  const gelukt = await verwerk(budgetInfo(F('snelBudget').value), F('snelBedrag').value, F('snelNotitie').value, ui.snelTeken, F('snelErr'));
+  knop.disabled = false;
+  if (gelukt) {
+    F('snelBedrag').value = '';
+    F('snelNotitie').value = '';
+    ui.snelTeken = 'af';
+    $$('#snelAf .teken button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.teken === 'af')));
+    renderBudget();
+  }
+});
+F('budUndo').addEventListener('click', async () => {
+  const l = ui.laatste;
+  if (!l) return;
+  try {
+    if (l.soort === 'post') await store.wisPost(l.id); else await store.wisStorting(l.id);
+    ui.laatste = null;
+    renderBudget();
+  } catch (e) { fout(e); }
+});
+
+/* budget editor */
+let budDraft = [];
+function nieuwBudget() { return { id: 'b' + Date.now().toString(36), naam: '', bedragTekst: '', soort: '', meenemen: false, start: vandaag().slice(0, 7) }; }
+function renderBudEdit() {
+  const ul = F('budEdit');
+  ul.replaceChildren();
+  if (!budDraft.length) ul.append(el('li', 'hint', 'Nog geen budgetten.'));
+  budDraft.forEach((b, i) => {
+    const li = el('li'), r1 = el('div', 'r'), r2 = el('div', 'r');
+    const naam = el('input'), bedrag = el('input'), x = el('button', 'x', '×');
+    naam.id = 'budn-' + b.id; naam.className = 'naam'; naam.value = b.naam; naam.maxLength = 30; naam.autocomplete = 'off'; naam.placeholder = 'Naam, bijv. Brandstof';
+    naam.setAttribute('aria-label', `Naam van budget ${i + 1}`);
+    naam.addEventListener('input', () => { b.naam = naam.value; });
+    bedrag.id = 'budb-' + b.id; bedrag.className = 'bedr'; bedrag.value = b.bedragTekst; bedrag.inputMode = 'decimal'; bedrag.autocomplete = 'off'; bedrag.placeholder = '100,00';
+    bedrag.setAttribute('aria-label', `Bedrag per maand voor ${b.naam || 'budget ' + (i + 1)}`);
+    bedrag.addEventListener('input', () => { b.bedragTekst = bedrag.value; });
+    x.type = 'button';
+    x.setAttribute('aria-label', `Verwijder ${b.naam || 'budget'}`);
+    x.addEventListener('click', () => { budDraft.splice(i, 1); renderBudEdit(); });
+    r1.append(naam, bedrag, el('span', null, 'per maand'), x);
+    const pop = el('span', 'popup'), sel = el('select'), lab = el('label', 'chk'), cb = el('input');
+    sel.id = 'buds-' + b.id;
+    sel.setAttribute('aria-label', 'Soort die vanzelf in dit budget komt');
+    vulSelect(sel, [['', 'Geen vaste soort'], ...kiesbareSoorten(b.soort).map(s => [s.id, s.naam])], b.soort);
+    sel.addEventListener('change', () => {
+      const vorige = soortInfo(b.soort)?.naam || '';
+      b.soort = sel.value;
+      if (!b.naam.trim() || b.naam === vorige) { b.naam = soortInfo(b.soort)?.naam || b.naam; naam.value = b.naam; }
+    });
+    pop.append(sel);
+    cb.type = 'checkbox'; cb.id = 'budm-' + b.id; cb.checked = b.meenemen;
+    cb.addEventListener('change', () => { b.meenemen = cb.checked; });
+    lab.append(cb, el('span', null, 'Rest mee naar volgende maand'));
+    r2.append(pop, lab);
+    li.append(r1, r2);
+    ul.append(li);
+  });
+  F('budNieuw').disabled = budDraft.length >= MAX_BUD;
+}
+function openBudgetten(nieuw) {
+  budDraft = state.inst.budgetten.map(b => ({ ...b, bedragTekst: invoer(b.bedrag) }));
+  if (nieuw && budDraft.length < MAX_BUD) budDraft.push(nieuwBudget());
+  F('budErr').textContent = '';
+  renderBudEdit();
+  F('dlgBud').showModal();
+  if (nieuw) { const inputs = $$('#budEdit .naam'); inputs[inputs.length - 1]?.focus(); }
+}
+F('budNieuw').addEventListener('click', () => {
+  if (budDraft.length >= MAX_BUD) return;
+  budDraft.push(nieuwBudget());
+  renderBudEdit();
+  const inputs = $$('#budEdit .naam');
+  inputs[inputs.length - 1].focus();
+});
+F('formBud').addEventListener('submit', async e => {
+  e.preventDefault();
+  const namen = budDraft.map(b => b.naam.trim());
+  if (namen.some(n => !n)) { F('budErr').textContent = 'Geef elk budget een naam, of verwijder het.'; return; }
+  if (new Set(namen.map(n => n.toLowerCase())).size !== namen.length) { F('budErr').textContent = 'Twee budgetten hebben dezelfde naam.'; return; }
+  const bedragen = budDraft.map(b => parseGetal(b.bedragTekst || '0'));
+  const fout1 = bedragen.findIndex(n => !(n >= 0));
+  if (fout1 > -1) { F('budErr').textContent = `Vul bij ${namen[fout1]} een bedrag per maand in, bijvoorbeeld 100.`; F('budb-' + budDraft[fout1].id).focus(); return; }
+  const weg = state.inst.budgetten.filter(b => !budDraft.some(d => d.id === b.id)).map(b => b.id);
+  const posten = state.posten.filter(p => weg.includes(p.budget)), stortingen = state.stortingen.filter(s => weg.includes(s.budget));
+  if (posten.length || stortingen.length) {
+    const delen = [];
+    if (posten.length) delen.push(`${cap(aantal(posten.length))} ${posten.length === 1 ? 'blijft' : 'blijven'} in je boekje staan, zonder budget.`);
+    if (stortingen.length) delen.push(`${stortingen.length === 1 ? '1 bijstorting wordt' : `${stortingen.length} bijstortingen worden`} verwijderd.`);
+    const ok = await ask({ title: 'Budget verwijderen', icon: '?', msg: delen.join(' '), buttons: [{ label: 'OK', value: true }, { label: 'Annuleren', value: false }] });
+    if (!ok) return;
+  }
+  try {
+    await store.zetInst({ ...state.inst, budgetten: budDraft.map((b, i) => ({ id: b.id, naam: namen[i], bedrag: round2(bedragen[i]), soort: b.soort, meenemen: b.meenemen, start: b.start || vandaag().slice(0, 7) })) });
+    await schrijfPosten(posten.map(p => ({ id: p.id, data: naarData({ ...p, budget: '' }) })));
+    for (const s of stortingen) await metBackoff(() => store.wisStorting(s.id));
+    F('dlgBud').close();
+    render();
+  } catch (err) { console.error(err); F('budErr').textContent = foutTekst(err); }
+});
+
+/* history */
+function renderHistorie() {
+  const mk = huidigeMaand(), rows = [];
+  for (const b of state.inst.budgetten) for (const m of mutaties(b.id, mk)) rows.push({ ...m, budget: b });
+  rows.sort((a, b) => b.datum.localeCompare(a.datum) || (b.aangemaakt || '').localeCompare(a.aangemaakt || ''));
+  F('histSub').textContent = `${cap(MAANDEN[state.view.m - 1])} ${state.view.y} · alle budgetten`;
+  const t = F('histTabel');
+  t.replaceChildren();
+  const thead = el('thead'), hr = el('tr');
+  ['Datum', 'Budget', 'Waarvoor', { t: 'Bedrag', n: true }].forEach(c => hr.append(cel('th', c)));
+  thead.append(hr);
+  const tbody = el('tbody');
+  if (!rows.length) { const tr = el('tr'), td = el('td', 'leeg', 'Deze maand is er nog niets afgeboekt of bijgestort.'); td.colSpan = 4; tr.append(td); tbody.append(tr); }
+  for (const m of rows) {
+    const tr = el('tr', 'klik');
+    tr.tabIndex = 0;
+    [datumKort(m.datum), m.budget.naam, m.tekst, { t: metTeken(m.bedrag, true), n: true }].forEach(c => tr.append(cel('td', c)));
+    const open = () => m.soort === 'post' ? openPost(m.id) : vraagWisStorting(m, m.budget);
+    tr.addEventListener('click', open);
+    tr.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+    tbody.append(tr);
+  }
+  t.append(thead, tbody);
+  const af = rows.filter(m => m.bedrag < 0).reduce((a, m) => a - m.bedrag, 0), bij = rows.filter(m => m.bedrag > 0).reduce((a, m) => a + m.bedrag, 0);
+  let over = 0;
+  for (const b of state.inst.budgetten) over += budgetStand(b, mk).over;
+  F('histNoot').textContent = rows.length ? `Afgeboekt: ${metTeken(-af)} · Bijgestort: ${metTeken(bij, true)} · Nog over: ${metTeken(over)}. Tik op een regel om hem te bekijken of te wijzigen.` : '';
+}
+function openHistorie() { renderHistorie(); F('dlgHist').showModal(); }
+
+/* ---------- examples + info ---------- */
+async function wisVoorbeelden() {
+  const vb = state.posten.filter(p => p.voorbeeld);
+  if (!vb.length) return;
+  const ok = await ask({ title: 'Voorbeelden wissen', icon: '?', msg: `${vb.length} voorbeeldposten verwijderen? Je eigen posten blijven staan.`, buttons: [{ label: 'Wissen', value: true }, { label: 'Annuleren', value: false }] });
+  if (!ok) return;
+  try { for (const p of vb) await store.wisPost(p.id); } catch (e) { fout(e); }
+}
+function openInfo() {
+  const waar = LOKAAL
+    ? 'Je gegevens staan alleen in deze browser op dit apparaat. Maak af en toe een backup (menu, Backup maken); met die backup zet je alles ook over naar een ander apparaat.'
+    : 'Je posten worden in dit artifact bewaard; iedereen met wie je het deelt, kan ze zien.';
+  ask({ title: 'Info', icon: 'i', msg: 'Onkostenboekje Plus houdt je uitgaven bij, zoals Onkosten (Expense) en ExpensePlus op de Palm-PDA: invoer met icoontjes, budgetten waar je snel van afboekt, rapporten per week of declaratie, ritten met kilometerstanden, bonnetjes en wisselkoersen. ' + waar });
+}
+
+/* ---------- backup ---------- */
+function backupData() {
+  return {
+    app: 'onkostenboekje', versie: 1, gemaakt: new Date().toISOString(), instellingen: state.inst,
+    posten: state.posten.map(p => ({ id: p.id, ...naarData(p), gewijzigd: undefined })),
+    stortingen: state.stortingen.map(s => ({ id: s.id, budget: s.budget, bedrag: s.bedrag, datum: s.datum, notitie: s.notitie, aangemaakt: s.aangemaakt })),
+  };
+}
+async function maakBackup() {
+  if (!downloads) { ask({ title: 'Backup', icon: '!', msg: 'Downloaden werkt niet in deze weergave.' }); return; }
+  try {
+    await downloads.save({ filename: `onkostenboekje-backup-${vandaag()}.json`, data: JSON.stringify(backupData()) });
+    onthoud('backup', vandaag());
+    render();
+  } catch (e) {
+    if (e && e.code === 'declined') return;
+    console.error(e);
+    ask({ title: 'Backup', icon: '!', msg: 'Het bestand kon niet worden opgeslagen. Probeer het opnieuw.' });
+  }
+}
+function kiesBackup() { F('backupFile').value = ''; F('backupFile').click(); }
+F('backupFile').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0];
+  if (!f) return;
+  let b;
+  try { b = JSON.parse(await f.text()); } catch { b = null; }
+  if (!b || b.app !== 'onkostenboekje' || !Array.isArray(b.posten)) { ask({ title: 'Backup terugzetten', icon: '!', msg: `${f.name} is geen backup van het Onkostenboekje. Kies een bestand dat begint met onkostenboekje-backup.` }); return; }
+  const posten = b.posten.filter(p => p && typeof p.id === 'string' && /^[A-Za-z0-9_\-.~:@+]{1,200}$/.test(p.id));
+  const stortingen = (Array.isArray(b.stortingen) ? b.stortingen : []).filter(x => x && typeof x.id === 'string' && /^[A-Za-z0-9_\-.~:@+]{1,200}$/.test(x.id));
+  const ok = await ask({ title: 'Backup terugzetten', icon: '?', msg: `Backup van ${b.gemaakt ? datumNL(String(b.gemaakt).slice(0, 10)) : 'onbekende datum'}: ${aantal(posten.length)}${stortingen.length ? ` en ${stortingen.length} ${stortingen.length === 1 ? 'bijstorting' : 'bijstortingen'}` : ''}, met je instellingen en budgetten. Wat al in het boekje staat, blijft staan; posten uit de backup die er al in zitten, worden bijgewerkt.`, buttons: [{ label: 'Terugzetten', value: true }, { label: 'Annuleren', value: false }] });
+  if (!ok) return;
+  try {
+    if (b.instellingen) await metBackoff(() => store.zetInst(b.instellingen));
+    await schrijfPosten(posten.map(({ id, ...rest }) => ({ id, data: naarData(leesPost(id, rest)) })));
+    for (const { id, ...rest } of stortingen) { const x = leesStorting(id, rest); await metBackoff(() => store.zetStorting(id, { budget: x.budget, bedrag: x.bedrag, datum: x.datum, notitie: x.notitie, aangemaakt: x.aangemaakt })); }
+    ask({ title: 'Backup terugzetten', icon: 'i', msg: `Klaar: ${aantal(posten.length)} staan in het boekje.` });
+  } catch (err) { fout(err); }
+});
+
+/* ---------- menu ---------- */
+const MENU = [
+  { label: 'Nieuwe post', key: 'N', run: () => openNieuw() },
+  { label: 'Overzicht', key: 'O', run: openOverzicht, when: () => state.loaded },
+  { label: 'Rapport…', key: 'R', run: openRapport, when: () => state.loaded },
+  { label: 'Exporteren…', key: 'E', run: openExport, when: () => state.loaded },
+  { label: 'Importeren…', key: 'I', run: openImport, when: () => state.loaded },
+  'sep',
+  { label: 'Categorieën…', key: 'C', run: openCats },
+  { label: 'Soorten…', key: 'S', run: openSoorten },
+  { label: 'Budgetten…', key: 'B', run: () => openBudgetten(false) },
+  { label: 'Voorkeuren…', key: 'V', run: openPrefs },
+  { label: 'Backup maken', key: 'K', run: maakBackup, when: () => state.loaded },
+  { label: 'Backup terugzetten…', key: 'T', run: kiesBackup, when: () => state.loaded },
+  { label: 'Voorbeelden wissen', key: 'W', run: wisVoorbeelden, when: () => state.posten.some(p => p.voorbeeld) },
+  { label: 'Info', key: 'H', run: openInfo },
+];
+const menu = F('menu');
+const actieveTab = () => state.view.scherm === 'budget' ? F('tabBudget') : F('tabPosten');
+function openMenu() {
+  menu.replaceChildren();
+  for (const it of MENU) {
+    if (it === 'sep') { const hr = el('hr'); hr.setAttribute('role', 'separator'); menu.append(hr); continue; }
+    if (it.when && !it.when()) continue;
+    const b = el('button', 'mi');
+    b.type = 'button'; b.dataset.key = it.key; b.setAttribute('role', 'menuitem');
+    b.append(el('span', null, it.label), el('span', 'sc', '/' + it.key));
+    b.addEventListener('click', () => { closeMenu(); it.run(); });
+    menu.append(b);
+  }
+  menu.hidden = false;
+  actieveTab().setAttribute('aria-expanded', 'true');
+  const first = menu.querySelector('.mi');
+  first && first.focus();
+}
+function closeMenu(focusTab) {
+  if (menu.hidden) return;
+  menu.hidden = true;
+  actieveTab().setAttribute('aria-expanded', 'false');
+  if (focusTab) actieveTab().focus();
+}
+function zetScherm(scherm) {
+  state.view.scherm = scherm;
+  ui.laatste = null;
+  bewaarView();
+  render();
+}
+for (const t of [F('tabPosten'), F('tabBudget')]) t.addEventListener('click', () => {
+  if (t.dataset.scherm !== state.view.scherm) { closeMenu(); zetScherm(t.dataset.scherm); }
+  else if (menu.hidden) openMenu(); else closeMenu();
+});
+menu.addEventListener('keydown', e => {
+  const items = $$('.mi', menu), i = items.indexOf(document.activeElement);
+  if (e.key === 'Escape') { e.preventDefault(); closeMenu(true); }
+  else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+  else if (e.key.length === 1) { const hit = items.find(b => b.dataset.key === e.key.toUpperCase()); if (hit) { e.preventDefault(); hit.click(); } }
+});
+document.addEventListener('pointerdown', e => { if (!menu.hidden && !menu.contains(e.target) && !e.target.closest('.tabs')) closeMenu(); });
+
+/* ---------- main controls ---------- */
+F('catFilter').addEventListener('change', e => {
+  const v = e.target.value;
+  if (v === '__edit') { e.target.value = state.view.cat; openCats(); return; }
+  state.view.cat = v; bewaarView(); render();
+});
+$$('.period [data-mode]').forEach(b => b.addEventListener('click', () => { state.view.mode = b.dataset.mode; bewaarView(); render(); }));
+function stap(d) {
+  const v = state.view;
+  if (v.mode === 'maand' || v.scherm === 'budget') { v.m += d; if (v.m < 1) { v.m = 12; v.y--; } if (v.m > 12) { v.m = 1; v.y++; } }
+  else if (v.mode === 'jaar') v.y += d;
+  render();
+}
+F('prev').addEventListener('click', () => stap(-1));
+F('next').addEventListener('click', () => stap(1));
+F('plabel').addEventListener('click', () => { const d = new Date(); state.view.y = d.getFullYear(); state.view.m = d.getMonth() + 1; render(); });
+F('btnNew').addEventListener('click', openNieuw);
+F('btnOv').addEventListener('click', openOverzicht);
+F('btnRap').addEventListener('click', openRapport);
+F('btnExp').addEventListener('click', openExport);
+F('btnBudNieuw').addEventListener('click', () => openBudgetten(true));
+F('btnBudEdit').addEventListener('click', () => openBudgetten(false));
+F('btnHist').addEventListener('click', openHistorie);
+document.addEventListener('click', e => { const c = e.target.closest('[data-close]'); if (c && !c.disabled) c.closest('dialog').close(); });
+
+/* ---------- boot ---------- */
+async function boot() {
+  render();
+  const c = window.claude;
+  let db = null;
+  if (c && typeof c.use === 'function') {
+    c.use('downloads').then(d => { downloads = d; }, () => {});
+    try { db = await c.use('db'); } catch { db = null; }
+  }
+  if (!db) { state.opslag = 'geheugen'; state.loaded = true; render(); return; }
+  store.db = db;
+  state.opslag = 'db';
+  db.collection('posten').onSnapshot(snap => {
+    state.posten = snap.docs.filter(d => d.exists).map(d => leesPost(d.id, d.data() || {}));
+    state.loaded = true;
+    render();
+  }, err => { console.error(err); state.dbFout = true; state.loaded = true; render(); });
+  db.collection('stortingen').onSnapshot(snap => {
+    state.stortingen = snap.docs.filter(d => d.exists).map(d => leesStorting(d.id, d.data() || {}));
+    render();
+  }, err => console.error(err));
+  db.doc('instellingen/app').onSnapshot(snap => {
+    state.inst = mergeInst(snap.exists ? snap.data() : null);
+    render();
+  }, err => console.error(err));
+}
+if (LOKAAL) F('impOnbUitleg').textContent = 'Deze databases kan het boekje (nog) niet lezen. Voor de gewone Onkosten-app kies je ExpenseDB.pdb; tabellen uit Excel sla je eerst op als CSV.';
+boot();
+})();
+</script>
