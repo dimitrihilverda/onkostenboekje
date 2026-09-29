@@ -1,11 +1,12 @@
 # Onkostenboekje
 
-Een budget- en uitgavenboekje in de stijl van Onkosten (Expense) en ExpensePlus op de Palm-PDA. Het draait los, zonder account: alles staat in de browser op je eigen apparaat.
+Een budget- en uitgavenboekje in de stijl van HandyShopper, Onkosten (Expense) en ExpensePlus op de Palm-PDA. Het draait los, zonder account: alles staat in de browser op je eigen apparaat.
 
-- **Budgetten**: maak groepen met een bedrag per maand, bijvoorbeeld Brandstof € 100. Tik op het bedrag dat nog over is en tik `25` of `-25`, met een notitie als "autowassen". Er opent geen nieuw venster. Met `+` stort je geld bij.
+- **Budgetten**: potjes met een bedrag, bijvoorbeeld Brandstof € 100 per maand, bij elkaar in groepen (zoals de winkels in HandyShopper, bijvoorbeeld per rekening). Tik op het bedrag dat nog over is en tik `25` of `-25`, met een notitie als "autowassen". Er opent geen nieuw venster. Met `+` stort je geld bij, met `=` zet je het bedrag direct op een nieuwe waarde.
 - **Snel afboeken**: bovenaan het Budget-scherm tik je een bedrag, kies je het budget uit de lijst en vul je in waarvoor het was.
 - **Historie**: tik op de naam van een budget voor alles wat je deze maand hebt afgeboekt, of gebruik de knop Historie voor alle budgetten samen.
 - **Rest meenemen**: per budget kies je of wat over is meegaat naar de volgende maand.
+- **Uit HandyShopper overzetten**: kies bij Importeren de lijst uit de `Backup`-map van je Palm, bijvoorbeeld `HS2_Boekhouding.PDB`. Elke regel wordt een budget, gegroepeerd per winkel of categorie, met het bedrag als beginsaldo of als budget per maand.
 - Verder: uitgaven met icoontjes, rapporten (declaratie, weekstaat, rittenstaat), kilometerstanden, bonnetjes, wisselkoersen, export naar Excel en import van Palm-bestanden (`ExpenseDB.pdb`) en CSV.
 
 ## Gebruiken
