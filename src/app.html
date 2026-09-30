@@ -260,6 +260,8 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
 .bud-naam{flex:1;min-width:0;display:grid;grid-template-columns:24px minmax(0,1fr);column-gap:8px;row-gap:2px;align-items:center;background:transparent;border:0;text-align:left;cursor:pointer;padding:4px;border-radius:4px}
 .bud-naam:hover{background:var(--hover)}
 .bud-naam svg{grid-row:span 2}
+.bud-naam.kaal svg{grid-row:auto}
+.bud:has(.bud-naam.kaal):not(:has(.bud-in,.bud-hist)){padding:2px 0 3px}
 .bud-t{font:21px/1.05 var(--data);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bud-sub{font:13px/1.25 var(--ui);color:var(--ink-2)}
 .bud-over{flex:none;font:22px/1 var(--data);background:transparent;border:1.5px solid var(--ink);border-radius:6px;padding:7px 10px;cursor:pointer;min-width:5.6em;text-align:right;font-variant-numeric:tabular-nums}
@@ -283,6 +285,10 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
 .budedit .popup select{max-width:12em}
 .rt tr.klik{cursor:pointer}
 .rt tr.klik:hover td{background:var(--hover)}
+.budedit .groep{flex:1 1 8em}
+#snelTeken{display:contents}
+.snel .snelhint{margin:0!important;font-size:12.5px!important}
+#impHs .chk{margin:2px 0 10px}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
 </style>
 
@@ -295,6 +301,7 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
           <button type="button" class="tab uit" id="tabBudget" data-scherm="budget">Budget</button>
         </div>
         <label class="popup" id="catPop" for="catFilter"><span class="sr">Categorie</span><select id="catFilter"></select></label>
+        <label class="popup" id="groepPop" for="groepFilter" hidden><span class="sr">Groep</span><select id="groepFilter"></select></label>
       </header>
       <div class="menu" id="menu" role="menu" aria-label="Menu" hidden></div>
 
@@ -317,7 +324,7 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
         <form class="snel" id="snelAf" novalidate>
           <p class="kop2">Snel afboeken</p>
           <div class="snel-r">
-            <div class="push teken" role="group" aria-label="Afboeken of bijstorten"><button type="button" data-teken="af" aria-pressed="true" aria-label="Afboeken">−</button><button type="button" data-teken="bij" aria-pressed="false" aria-label="Bijstorten">+</button></div>
+            <span id="snelTeken"></span>
             <input id="snelBedrag" class="bedr" inputmode="decimal" autocomplete="off" placeholder="25,00" aria-label="Bedrag">
             <span class="popup"><select id="snelBudget" aria-label="Van welk budget"></select></span>
           </div>
@@ -325,6 +332,7 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
             <input id="snelNotitie" class="noti" maxlength="80" autocomplete="off" placeholder="Waarvoor? Bijv. autowassen" aria-label="Waarvoor">
             <button type="submit" class="btn">OK</button>
           </div>
+          <p class="hint snelhint">− afboeken · + bijstorten · = bedrag vastzetten</p>
           <p class="err" id="snelErr" role="alert"></p>
         </form>
         <div class="budstatus" id="budStatus" role="status" hidden><span id="budStatusTekst"></span><button type="button" class="btn" id="budUndo">Ongedaan maken</button></div>
@@ -510,7 +518,7 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
   <h2 class="dlg-title" id="impTitle">Importeren</h2>
   <div class="dlg-body" id="impKies">
     <div class="drop" id="impDrop">
-      <p>Kies de bestanden van je Palm (<b>.pdb</b>) of een tabel uit Excel (<b>.csv</b>), of sleep ze hierheen.</p>
+      <p>Kies de bestanden van je Palm (<b>.pdb</b>) uit HandyShopper, Onkosten of ExpensePlus, of een tabel uit Excel (<b>.csv</b>), of sleep ze hierheen.</p>
       <input type="file" id="impFile" class="sr" multiple><label class="btn filebtn" for="impFile">Kies bestanden…</label>
     </div>
     <details class="help">
@@ -519,6 +527,7 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
         <li><b>Met een geheugenkaart</b> (Palm met kaartsleuf, zoals m500, Zire, Tungsten of T|X): installeer het gratis programma FileZ en kopieer daarmee de databases naar de kaart. Voor de gewone Onkosten-app is dat <code>ExpenseDB</code>. Voor ExpensePlus kopieer je alle databases van ExpensePlus; sorteer in FileZ op Creator, dan staan ze bij elkaar. Op de computer vind je ze als <code>.pdb</code>, meestal in de map <code>PALM/Launcher</code>.</li>
         <li><b>Met HotSync en Palm Desktop</b>: doe een HotSync en zoek daarna op die computer naar bestanden die eindigen op <code>.pdb</code> in de map van je Palm-gebruikersnaam, meestal in de submap <code>Backup</code>.</li>
         <li><b>Met pilot-link</b> (Linux): <code>pilot-xfer -p usb: -f ExpenseDB</code>, of <code>pilot-xfer -p usb: -b map</code> om alles te kopiëren.</li>
+        <li><b>HandyShopper</b>: elke lijst is een eigen database. Na een HotSync staan ze in de map <code>Backup</code>, met de naam van de lijst, bijvoorbeeld <code>HS2_Boekhouding.PDB</code>. Kies die hier; elke regel wordt een budget, bij elkaar per winkel.</li>
         <li><b>Excel-bestanden</b> uit ExpensePlus of Palm Desktop: open ze in Excel, kies Opslaan als en dan CSV, en kies dat bestand hier.</li>
       </ol>
     </details>
@@ -548,6 +557,15 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
     <div class="tw"><table class="rt" id="csvTabel"></table></div>
     <p class="hint" id="csvNoot"></p>
   </div>
+  <div class="dlg-body" id="impHs" hidden>
+    <p class="sub" id="hsKop"></p>
+    <div class="kmrow"><span id="hsGroepLab">Groeperen op:</span><div class="push" role="group" aria-labelledby="hsGroepLab"><button type="button" data-hsgroep="winkel">Winkel</button><button type="button" data-hsgroep="categorie">Categorie</button></div></div>
+    <div class="kmrow"><span id="hsBedragLab">Het bedrag is:</span><div class="push" role="group" aria-labelledby="hsBedragLab"><button type="button" data-hsbedrag="over">Wat er nog in zit</button><button type="button" data-hsbedrag="maand">Budget per maand</button></div></div>
+    <label class="chk"><input type="checkbox" id="hsLeeg"><span>Regels zonder bedrag overslaan</span></label>
+    <p class="kop2">Voorbeeld</p>
+    <div class="tw"><table class="rt" id="hsTabel"></table></div>
+    <p class="hint" id="hsNoot"></p>
+  </div>
   <div class="dlg-body" id="impOnb" hidden>
     <p>Deze bestanden komen niet uit de gewone Onkosten-app:</p>
     <ul class="onblist" id="impOnbLijst"></ul>
@@ -576,8 +594,9 @@ dialog.palm.wide{width:min(700px,calc(100vw - 32px))}
     <h2 class="dlg-title" id="budTitle">Budgetten</h2>
     <div class="dlg-body">
       <ul class="budedit" id="budEdit"></ul>
+      <datalist id="budGroepen"></datalist>
       <p><button type="button" class="btn" id="budNieuw">Nieuw budget</button></p>
-      <p class="hint">Het bedrag geldt per maand. Kies je een soort, bijvoorbeeld Brandstof, dan komt een nieuwe post van die soort vanzelf in dit budget. Zonder vinkje begint elke maand weer met het volle bedrag; met vinkje gaat wat over is (of wat je tekortkwam) mee naar de volgende maand.</p>
+      <p class="hint">Het bedrag geldt per maand. Met een groep (bijvoorbeeld een rekening, zoals de winkels in HandyShopper) zet je budgetten bij elkaar. Kies je een soort, bijvoorbeeld Brandstof, dan komt een nieuwe post van die soort vanzelf in dit budget. Zonder vinkje begint elke maand weer met het volle bedrag; met vinkje gaat wat over is (of wat je tekortkwam) mee naar de volgende maand.</p>
       <p class="err" id="budErr" role="alert"></p>
     </div>
     <div class="dlg-buttons">
@@ -714,7 +733,7 @@ const SOORT = Object.fromEntries(SOORTEN.map(s => [s.id, s]));
 const BETALING = [['onbepaald','Onbepaald'],['contant','Contant'],['pinpas','Pinpas'],['creditcard','Creditcard'],['amex','American Express'],['mastercard','Mastercard'],['visa','VISA'],['ideal','iDEAL'],['overboeking','Overboeking'],['cheque','Cheque'],['vooruit','Vooruitbetaald']];
 const STATUS = [['open','Open'],['gedeclareerd','Gedeclareerd'],['vergoed','Vergoed'],['prive','Privé, niet declareren']];
 const VALUTA = [['EUR','€ · euro'],['NLG','ƒ · Nederlandse gulden'],['USD','$ · Amerikaanse dollar'],['GBP','£ · Brits pond'],['CHF','CHF · Zwitserse frank'],['DKK','DKK · Deense kroon'],['SEK','SEK · Zweedse kroon'],['NOK','NOK · Noorse kroon'],['PLN','PLN · Poolse zloty'],['CZK','CZK · Tsjechische kroon'],['JPY','¥ · Japanse yen']];
-const MAX_CATS = 15, MAX_EIGEN = 40, MAX_BUD = 30, MAX_DOCS = 5000;
+const MAX_CATS = 15, MAX_EIGEN = 40, MAX_BUD = 300, MAX_DOCS = 5000;
 const DEFAULT_INST = {
   categorieen: [{id:'algemeen', naam:'Algemeen'}, {id:'zakelijk', naam:'Zakelijk'}, {id:'prive', naam:'Privé'}, {id:'vakantie', naam:'Vakantie'}],
   sorteer: 'datum', kmTarief: 0.23, valuta: 'EUR', eigenSoorten: [], verborgenSoorten: [], koersen: {}, nieuw: 'iconen', budgetten: [],
@@ -726,7 +745,7 @@ const vandaag = () => iso(new Date());
 const begin = new Date();
 const state = {
   posten: [], stortingen: [], inst: mergeInst(null), loaded: false, opslag: 'laden', dbFout: false, selId: null,
-  view: { mode: 'maand', y: begin.getFullYear(), m: begin.getMonth() + 1, cat: 'alle', scherm: 'posten' },
+  view: { mode: 'maand', y: begin.getFullYear(), m: begin.getMonth() + 1, cat: 'alle', scherm: 'posten', groep: 'alle' },
 };
 let downloads = null;
 function onthoud(k, v) {
@@ -737,10 +756,11 @@ try {
   const v = JSON.parse(onthoud('view') || 'null');
   if (v && ['maand','jaar','alles'].includes(v.mode)) state.view.mode = v.mode;
   if (v && typeof v.cat === 'string') state.view.cat = v.cat;
+  if (v && typeof v.groep === 'string') state.view.groep = v.groep;
   if (v && ['posten', 'budget'].includes(v.scherm)) state.view.scherm = v.scherm;
   else if (LOKAAL) state.view.scherm = 'budget';
 } catch {}
-const bewaarView = () => onthoud('view', JSON.stringify({ mode: state.view.mode, cat: state.view.cat, scherm: state.view.scherm }));
+const bewaarView = () => onthoud('view', JSON.stringify({ mode: state.view.mode, cat: state.view.cat, scherm: state.view.scherm, groep: state.view.groep }));
 
 function mergeInst(d) {
   const i = { ...DEFAULT_INST, ...(d && typeof d === 'object' ? d : {}) };
@@ -756,7 +776,7 @@ function mergeInst(d) {
   const budgetten = Array.isArray(i.budgetten)
     ? i.budgetten.filter(b => b && typeof b.id === 'string' && typeof b.naam === 'string').slice(0, MAX_BUD).map(b => ({
         id: b.id, naam: b.naam, bedrag: Number(b.bedrag) >= 0 ? Math.round(Number(b.bedrag) * 100) / 100 : 0,
-        soort: str(b.soort), meenemen: b.meenemen === true, start: /^\d{4}-\d{2}$/.test(str(b.start)) ? b.start : '',
+        groep: str(b.groep).trim().slice(0, 30), soort: str(b.soort), meenemen: b.meenemen === true, start: /^\d{4}-\d{2}$/.test(str(b.start)) ? b.start : '',
       }))
     : [];
   return {
@@ -1083,6 +1103,7 @@ function render() {
     else { t.removeAttribute('aria-haspopup'); t.removeAttribute('aria-controls'); t.removeAttribute('aria-expanded'); t.title = 'Naar ' + t.textContent; }
   }
   F('catPop').hidden = budget;
+  if (!budget) F('groepPop').hidden = true;
   F('list').hidden = budget;
   F('budScherm').hidden = !budget;
   F('barPosten').hidden = budget;
@@ -1907,12 +1928,177 @@ function planCsv() {
   return { cats, nieuweCats: cats.length !== state.inst.categorieen.length, passenNiet, eigen, nieuweSoorten: eigen.length !== state.inst.eigenSoorten.length, items, overgeslagen, onbruikbaar, ruimte: MAX_DOCS - 1 - state.posten.length };
 }
 
+// HandyShopper 2 list databases (creator '2Shp', type 'List'). One record holds the store table
+// (100 slots of 34 bytes from offset 104, name from byte 2 of a slot); every other record is an
+// item: version byte 3, two flag bytes, then tagged fields up to a 0 byte:
+// 0x0b store ids (count + ids), 0x0d/0x04/0x05 four-byte values (0x04 quantity × 1000, 0x05 price
+// in cents, may be negative), 0x07 packed date, 0x06 text (one byte, count, then length-prefixed
+// NUL-terminated strings: description first).
+function leesHandyShopper(buf) {
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), len = u8.length;
+  const dec = new TextDecoder('windows-1252');
+  const cstr = (off, max) => { const lim = Math.min(len, off + max); let e = off; while (e < lim && u8[e] !== 0) e++; return dec.decode(u8.subarray(off, e)); };
+  const appInfo = dv.getUint32(52), n = dv.getUint16(76);
+  const lijst = [];
+  for (let i = 0; i < n; i++) {
+    const o = 78 + i * 8;
+    if (o + 8 > len) break;
+    lijst.push({ i, off: dv.getUint32(o), attr: u8[o + 4], uid: (u8[o + 5] << 16) | (u8[o + 6] << 8) | u8[o + 7] });
+  }
+  const grenzen = [...new Set([...lijst.map(r => r.off), appInfo, len])].filter(x => x > 0).sort((a, b) => a - b);
+  const eindVan = off => grenzen.find(x => x > off) ?? len;
+  const cats = [];
+  if (appInfo && appInfo + 276 <= len) for (let k = 0; k < 16; k++) cats.push(cstr(appInfo + 2 + k * 16, 16).trim());
+  const winkels = {}, items = [];
+  let deels = 0;
+  for (const r of lijst) {
+    if (r.attr & 0x80 || r.off >= len) continue;
+    const e = Math.min(eindVan(r.off), len), b = u8.subarray(r.off, e);
+    if (!b.length) continue;
+    if (b[0] !== 0x03) {
+      if (b.length >= 104 + 34) for (const id of b.subarray(4, 4 + b[2])) {
+        const o = 104 + id * 34 + 2;
+        if (o >= b.length) continue;
+        let q = o;
+        while (q < Math.min(b.length, o + 32) && b[q]) q++;
+        const naam = dec.decode(b.subarray(o, q)).trim();
+        if (naam) winkels[id] = naam;
+      }
+      continue;
+    }
+    const it = { i: r.i, uid: r.uid, cat: r.attr & 0x0f, winkels: [], tekst: '', notitie: '', prijs: null, datum: '' };
+    let p = 3, heel = true;
+    while (p < b.length) {
+      const t = b[p++];
+      if (t === 0) break;
+      if (t === 0x0b) { const k = b[p++]; it.winkels = [...b.subarray(p, p + k)]; p += k; }
+      else if (t === 0x04 || t === 0x05 || t === 0x0d) {
+        if (p + 4 > b.length) { heel = false; break; }
+        if (t === 0x05) it.prijs = dv.getInt32(r.off + p);
+        p += 4;
+      } else if (t === 0x07) {
+        const v = p + 2 <= b.length ? dv.getUint16(r.off + p) : 0;
+        p += 2;
+        const y = (v >> 9) + 1904, m = (v >> 5) & 15, dag = v & 31;
+        if (v && m >= 1 && m <= 12 && dag >= 1 && new Date(y, m - 1, dag).getDate() === dag) it.datum = `${y}-${pad(m)}-${pad(dag)}`;
+      } else if (t === 0x06) {
+        p++;
+        const cnt = b[p++], s = [];
+        for (let k = 0; k < cnt && p < b.length; k++) { const L = b[p++]; s.push(dec.decode(b.subarray(p, p + L))); p += L + 1; }
+        it.tekst = (s[0] || '').replace(/\s+/g, ' ').trim();
+        it.notitie = s.slice(1).join('\n').trim();
+      } else { heel = false; break; }
+    }
+    if (!heel) {
+      deels++;
+      if (it.prijs === null && b.length >= 6 && b[b.length - 1] === 0 && b[b.length - 6] === 0x05) it.prijs = dv.getInt32(r.off + b.length - 5);
+    }
+    if (it.tekst) items.push(it);
+  }
+  return { cats, winkels, items, deels };
+}
+function planHs() {
+  const bestaand = state.inst.budgetten, al = new Set(bestaand.map(b => b.id));
+  const sleutels = new Set(bestaand.map(b => (groepVan(b) + '|' + b.naam).toLowerCase()));
+  const budgetten = [], stortingen = [], nu = new Date().toISOString(), maand = vandaag().slice(0, 7);
+  let overgeslagen = 0, leeg = 0, som = 0;
+  const over = imp.bedragIs === 'over';
+  for (const l of imp.lijsten) {
+    for (const it of l.items) {
+      const cents = it.prijs || 0;
+      if (imp.leegOverslaan && !cents) { leeg++; continue; }
+      const id = `hs-${fnv(l.naam)}-${(it.uid || it.i).toString(36)}`;
+      if (al.has(id)) { overgeslagen++; continue; }
+      let groep = imp.groepOp === 'winkel' ? (l.winkels[it.winkels[0]] || '') : '';
+      if (!groep && it.cat > 0) groep = l.cats[it.cat] || '';
+      if (!groep && imp.lijsten.length > 1) groep = l.naam.replace(/^HS2?_/i, '');
+      groep = groep.slice(0, 30);
+      let naam = it.tekst.slice(0, 30), k = 2;
+      while (sleutels.has((groep + '|' + naam).toLowerCase())) naam = `${it.tekst.slice(0, 25)} (${k++})`;
+      sleutels.add((groep + '|' + naam).toLowerCase());
+      budgetten.push({ id, naam, groep, bedrag: over ? 0 : Math.max(0, cents) / 100, soort: '', meenemen: over, start: maand });
+      const beginsaldo = over ? cents : Math.min(0, cents);
+      if (beginsaldo) stortingen.push({ id: id + '-start', data: { budget: id, bedrag: beginsaldo / 100, datum: vandaag(), notitie: 'Beginsaldo uit HandyShopper' + (it.datum ? ` (laatst gewijzigd ${datumNL(it.datum)})` : ''), aangemaakt: nu } });
+      som += cents;
+    }
+  }
+  return { budgetten, stortingen, overgeslagen, leeg, som, ruimte: MAX_BUD - bestaand.length };
+}
+function renderHs() {
+  const plan = planHs(), regels = imp.lijsten.reduce((a, l) => a + l.items.length, 0);
+  const winkels = new Set(imp.lijsten.flatMap(l => Object.values(l.winkels)));
+  F('hsKop').textContent = `${imp.lijsten.map(l => l.naam).join(', ')} · ${regels} ${regels === 1 ? 'regel' : 'regels'} · ${winkels.size} ${winkels.size === 1 ? 'winkel' : 'winkels'}`;
+  $$('#impHs [data-hsgroep]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.hsgroep === imp.groepOp)));
+  $$('#impHs [data-hsbedrag]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.hsbedrag === imp.bedragIs)));
+  F('hsLeeg').checked = imp.leegOverslaan;
+  const t = F('hsTabel');
+  t.replaceChildren();
+  const thead = el('thead'), hr = el('tr');
+  ['Naam en groep', { t: 'Bedrag', n: true }].forEach(c => hr.append(cel('th', c)));
+  thead.append(hr);
+  const tbody = el('tbody'), saldo = new Map(plan.stortingen.map(s => [s.data.budget, s.data.bedrag]));
+  for (const b of plan.budgetten.slice(0, 8)) {
+    const tr = el('tr');
+    const c = imp.bedragIs === 'over' ? centen(saldo.get(b.id) || 0) : centen(b.bedrag) + centen(saldo.get(b.id) || 0);
+    [{ t: b.naam, klein: groepNaam(b.groep) }, { t: metTeken(c), n: true }].forEach(x => tr.append(cel('td', x)));
+    tbody.append(tr);
+  }
+  if (!plan.budgetten.length) { const tr = el('tr'), td = el('td', 'leeg', regels ? 'Alle regels staan er al in.' : 'Deze lijst is leeg.'); td.colSpan = 2; tr.append(td); tbody.append(tr); }
+  t.append(thead, tbody);
+  const g = new Set(plan.budgetten.map(b => b.groep));
+  const noten = [];
+  if (plan.budgetten.length) noten.push(`${plan.budgetten.length} ${plan.budgetten.length === 1 ? 'budget' : 'budgetten'} in ${g.size} ${g.size === 1 ? 'groep' : 'groepen'}, samen ${metTeken(plan.som)}.`);
+  if (plan.budgetten.length > 8) noten.push(`Hierboven staan de eerste 8.`);
+  if (plan.overgeslagen) noten.push(`${plan.overgeslagen} ${plan.overgeslagen === 1 ? 'regel stond' : 'regels stonden'} er al in.`);
+  if (plan.leeg) noten.push(`${plan.leeg} ${plan.leeg === 1 ? 'regel zonder bedrag wordt' : 'regels zonder bedrag worden'} overgeslagen.`);
+  const deels = imp.lijsten.reduce((a, l) => a + l.deels, 0);
+  if (deels) noten.push(`${deels} ${deels === 1 ? 'regel was' : 'regels waren'} niet helemaal leesbaar; de naam en het bedrag zijn wel overgenomen.`);
+  noten.push(imp.bedragIs === 'over'
+    ? 'Het bedrag wordt het beginsaldo en wat over is gaat mee naar de volgende maand. Een bedrag per maand kun je daarna bij Budgetten invullen.'
+    : 'Het bedrag wordt het budget per maand; elke maand begint weer met het volle bedrag.');
+  F('hsNoot').textContent = noten.join(' ');
+  const teVeel = plan.budgetten.length > plan.ruimte;
+  F('impErr').textContent = teVeel ? `Er passen nog ${plan.ruimte} budgetten in het boekje; dit zijn er ${plan.budgetten.length}. Zet "Regels zonder bedrag overslaan" aan of verwijder eerst budgetten.` : '';
+  F('impGo').textContent = plan.budgetten.length ? `Importeer ${plan.budgetten.length} ${plan.budgetten.length === 1 ? 'budget' : 'budgetten'}` : 'Niets nieuws';
+  F('impGo').disabled = !plan.budgetten.length || teVeel;
+}
+$$('#impHs [data-hsgroep]').forEach(b => b.addEventListener('click', () => { imp.groepOp = b.dataset.hsgroep; renderHs(); }));
+$$('#impHs [data-hsbedrag]').forEach(b => b.addEventListener('click', () => { imp.bedragIs = b.dataset.hsbedrag; renderHs(); }));
+F('hsLeeg').addEventListener('change', () => { imp.leegOverslaan = F('hsLeeg').checked; renderHs(); });
+async function importeerHs() {
+  const plan = planHs();
+  if (!plan.budgetten.length || plan.budgetten.length > plan.ruimte) return;
+  importBezig = true;
+  F('impErr').textContent = ''; F('impOk').textContent = '';
+  toonStap('bezig');
+  F('impClose').disabled = true;
+  const totaal = plan.stortingen.length + 1;
+  const voortgang = k => { F('impVoortgang').textContent = `Bezig met overzetten: ${k} van ${totaal}…`; F('impMeter').style.width = (k / totaal * 100) + '%'; };
+  voortgang(0);
+  let gedaan = 0;
+  try {
+    await metBackoff(() => store.zetInst({ ...state.inst, budgetten: [...state.inst.budgetten, ...plan.budgetten] }));
+    voortgang(++gedaan);
+    for (const s of plan.stortingen) { await metBackoff(() => store.zetStorting(s.id, s.data)); voortgang(++gedaan); }
+    F('impVoortgang').textContent = `${plan.budgetten.length} ${plan.budgetten.length === 1 ? 'budget staat' : 'budgetten staan'} nu in het boekje.` + (plan.overgeslagen ? ` ${plan.overgeslagen} stonden er al in.` : '');
+    state.view.scherm = 'budget'; state.view.groep = 'alle';
+    const d = new Date(); state.view.y = d.getFullYear(); state.view.m = d.getMonth() + 1;
+    bewaarView();
+    render();
+  } catch (e) {
+    console.error(e);
+    F('impVoortgang').textContent = `Gestopt na ${gedaan} van ${totaal}. ${foutTekst(e)} Importeer hetzelfde bestand nog een keer om verder te gaan; wat al binnen is, sla ik over.`;
+  } finally {
+    importBezig = false;
+    F('impClose').disabled = false;
+  }
+}
 function toonStap(naam) {
-  for (const s of ['Kies', 'Palm', 'Csv', 'Onb', 'Bezig']) F('imp' + s).hidden = s.toLowerCase() !== naam;
-  F('impGo').hidden = !['palm', 'csv'].includes(naam);
+  for (const s of ['Kies', 'Palm', 'Hs', 'Csv', 'Onb', 'Bezig']) F('imp' + s).hidden = s.toLowerCase() !== naam;
+  F('impGo').hidden = !['palm', 'hs', 'csv'].includes(naam);
   F('impStuur').hidden = naam !== 'onb' || LOKAAL;
-  F('impAnders').hidden = !['palm', 'csv', 'onb'].includes(naam);
-  F('impOnbBox').hidden = LOKAAL || !(['palm', 'csv'].includes(naam) && imp && imp.onbekend.length);
+  F('impAnders').hidden = !['palm', 'hs', 'csv', 'onb'].includes(naam);
+  F('impOnbBox').hidden = LOKAAL || !(['palm', 'hs', 'csv'].includes(naam) && imp && imp.onbekend.length);
   F('impClose').textContent = naam === 'bezig' ? 'Klaar' : 'Annuleren';
 }
 function openImport() {
@@ -1930,14 +2116,32 @@ async function kiesBestanden(files) {
   F('impErr').textContent = ''; F('impOk').textContent = '';
   if (!files.length) return;
   try {
-    const palm = [], csv = [], onbekend = [];
+    const palm = [], hs = [], csv = [], onbekend = [], programmas = [];
     for (const f of files) {
       if (f.size > 16 * 1024 * 1024) throw new ImportFout(`${f.name} is te groot. Kies een Palm-database of een CSV-bestand.`);
       const buf = await f.arrayBuffer(), u8 = new Uint8Array(buf);
-      if (isPdb(u8)) { const kop = pdbKop(u8); if (kop.maker === 'exps' && kop.type === 'DATA') palm.push({ f, buf }); else onbekend.push({ f, buf, kop }); }
+      if (isPdb(u8)) {
+        const kop = pdbKop(u8);
+        if (kop.maker === 'exps' && kop.type === 'DATA') palm.push({ f, buf });
+        else if (kop.maker === '2Shp' && kop.type === 'List') hs.push({ f, buf, kop });
+        else if (kop.type === 'appl') programmas.push({ f, kop });
+        else onbekend.push({ f, buf, kop });
+      }
       else csv.push({ f, buf });
     }
     imp = { onbekend };
+    if (programmas.length && !palm.length && !hs.length && !csv.length && !onbekend.length) {
+      throw new ImportFout(`${programmas[0].f.name} is het programma ${programmas[0].kop.naam} zelf, niet je gegevens. Kies de databases (.pdb) met je lijsten.`);
+    }
+    if (hs.length && !palm.length) {
+      const lijsten = hs.map(({ f, buf, kop }) => ({ bestand: f.name, naam: kop.naam || f.name, ...leesHandyShopper(buf) }));
+      if (!lijsten.some(l => l.items.length)) throw new ImportFout(`${lijsten.length === 1 ? 'Deze HandyShopper-lijst is' : 'Deze HandyShopper-lijsten zijn'} leeg. Kies een lijst met regels, zoals de lijst die je in HandyShopper gebruikt.`);
+      Object.assign(imp, { soort: 'hs', lijsten: lijsten.filter(l => l.items.length), groepOp: 'winkel', bedragIs: 'over', leegOverslaan: false });
+      renderHs();
+      toonStap('hs');
+      if (onbekend.length) F('impOnbTekst').textContent = `Daarnaast ${onbekend.length === 1 ? 'is er 1 database' : `zijn er ${onbekend.length} databases`} van een ander programma: ${onbekend.map(o => o.kop.naam || o.f.name).join(', ')}.`;
+      return;
+    }
     const extra = palm.length + csv.length > 1 ? ` Ik neem nu ${palm.length ? palm[0].f.name : csv[0].f.name}; importeer de andere daarna apart.` : '';
     if (palm.length) {
       const pdb = leesExpensePdb(palm[0].buf);
@@ -2127,7 +2331,8 @@ $$('#impKm [data-eenheid]').forEach(b => b.addEventListener('click', () => {
 F('impAnders').addEventListener('click', () => { imp = null; F('impFile').value = ''; F('impErr').textContent = ''; F('impOk').textContent = ''; F('impStuur').disabled = F('impOnbStuur').disabled = false; toonStap('kies'); });
 F('dlgImp').addEventListener('cancel', e => { if (importBezig) e.preventDefault(); });
 F('impGo').addEventListener('click', async () => {
-  if (!imp || importBezig || !['palm', 'csv'].includes(imp.soort)) return;
+  if (!imp || importBezig || !['palm', 'hs', 'csv'].includes(imp.soort)) return;
+  if (imp.soort === 'hs') return importeerHs();
   if (imp.soort === 'palm' && !F('impKm').hidden) {
     const t = parseGetal(F('impTarief').value);
     if (!(t >= 0 && t < 10)) { F('impErr').textContent = 'Vul een vergoeding per km in tussen 0 en 10, bijvoorbeeld 0,23.'; F('impTarief').focus(); return; }
@@ -2159,14 +2364,22 @@ F('impGo').addEventListener('click', async () => {
 });
 
 /* ---------- budgets ---------- */
-// A budget is a monthly amount. Deductions are ordinary posts with a `budget` field;
-// top-ups ("bijstorten") live in the `stortingen` collection so they never count as spending.
+// A budget is a monthly amount, optionally in a group (like a store or bank account in HandyShopper).
+// Deductions are ordinary posts with a `budget` field; top-ups and corrections ("bijstorten")
+// live in the `stortingen` collection so they never count as spending.
 const ui = { open: new Set(), edit: null, inTeken: 'af', snelTeken: 'af', laatste: null };
 const budgetInfo = id => (id && state.inst.budgetten.find(b => b.id === id)) || null;
 const budgetIcoon = b => b.soort ? soortIcoon(b.soort) : 'munt';
 const maandIdx = mk => Number(mk.slice(0, 4)) * 12 + Number(mk.slice(5, 7)) - 1;
 const huidigeMaand = () => `${state.view.y}-${pad(state.view.m)}`;
-const metTeken = (c, plus) => (c < 0 ? '−' : plus ? '+' : '') + geld(Math.abs(c) / 100, state.inst.valuta);
+const metTeken = (c, plus) => (c < 0 ? '−' : plus && c > 0 ? '+' : '') + geld(Math.abs(c) / 100, state.inst.valuta);
+const groepVan = b => b.groep || '';
+const groepNaam = g => g || 'Zonder groep';
+const vergelijk = (a, b) => a.localeCompare(b, 'nl', { sensitivity: 'base' });
+const opBudget = (a, b) => vergelijk(groepVan(a), groepVan(b)) || vergelijk(a.naam, b.naam);
+const groepen = () => [...new Set(state.inst.budgetten.map(groepVan))].sort(vergelijk);
+const inGroep = (b, g) => g === 'alle' || groepVan(b) === g;
+const zichtbareBudgetten = () => state.inst.budgetten.filter(b => inGroep(b, state.view.groep)).sort(opBudget);
 function budgetStand(b, mk) {
   const eigenPosten = state.posten.filter(p => p.budget === b.id);
   const eigenSt = state.stortingen.filter(s => s.budget === b.id);
@@ -2197,22 +2410,33 @@ function mutaties(bid, mk) {
   }));
   return [...posten, ...stortingen].sort((a, b) => b.datum.localeCompare(a.datum) || (b.aangemaakt || '').localeCompare(a.aangemaakt || ''));
 }
+// teken: 'af' deducts, 'bij' tops up, 'zet' sets the amount that is left (a correction top-up for the difference).
 async function verwerk(b, ruw, notitie, teken, errEl) {
   ruw = String(ruw).trim().replace(/^−/, '-');
   if (ruw.startsWith('+')) teken = 'bij';
   else if (ruw.startsWith('-')) teken = 'af';
-  const n = Math.abs(parseGetal(ruw));
+  else if (ruw.startsWith('=')) { teken = 'zet'; ruw = ruw.slice(1); }
   if (!b) { errEl.textContent = 'Kies een budget.'; return false; }
-  if (!(n > 0)) { errEl.textContent = 'Vul een bedrag in, bijvoorbeeld 25.'; return false; }
+  const waarde = parseGetal(ruw);
+  if (teken === 'zet' ? !Number.isFinite(waarde) : !(Math.abs(waarde) > 0)) {
+    errEl.textContent = teken === 'zet' ? 'Vul in welk bedrag er moet staan, bijvoorbeeld 250.' : 'Vul een bedrag in, bijvoorbeeld 25.';
+    return false;
+  }
   errEl.textContent = '';
-  const bedrag = round2(n), datum = datumInMaand(huidigeMaand()), tekst = notitie.trim(), nu = new Date().toISOString();
+  const mk = huidigeMaand(), datum = datumInMaand(mk), tekst = notitie.trim(), nu = new Date().toISOString();
   try {
-    if (teken === 'bij') {
+    if (teken === 'zet') {
+      const doel = centen(round2(waarde)), verschil = doel - budgetStand(b, mk).over;
+      if (!verschil) return true;
       const id = store.nieuwStortingId();
+      await store.zetStorting(id, { budget: b.id, bedrag: verschil / 100, datum, notitie: tekst || `Bedrag gezet op ${metTeken(doel)}`, aangemaakt: nu });
+      ui.laatste = { soort: 'storting', id, tekst: `${b.naam} staat nu op ${metTeken(doel)}` };
+    } else if (teken === 'bij') {
+      const bedrag = round2(Math.abs(waarde)), id = store.nieuwStortingId();
       await store.zetStorting(id, { budget: b.id, bedrag, datum, notitie: tekst, aangemaakt: nu });
       ui.laatste = { soort: 'storting', id, tekst: `${metTeken(centen(bedrag), true)} bij ${b.naam}${tekst ? ' · ' + tekst : ''}` };
     } else {
-      const id = store.nieuwId();
+      const bedrag = round2(Math.abs(waarde)), id = store.nieuwId();
       await store.zetPost(id, naarData({
         datum, soort: b.soort || 'overig', bedrag, valuta: state.inst.valuta, betaling: 'onbepaald',
         categorie: catIds().includes('prive') ? 'prive' : 'algemeen', bon: false, status: 'prive',
@@ -2228,13 +2452,16 @@ async function verwerk(b, ruw, notitie, teken, errEl) {
     return false;
   }
 }
+const TEKENS = [['af', '−', 'Afboeken'], ['bij', '+', 'Bijstorten'], ['zet', '=', 'Bedrag vastzetten']];
 function tekenKnoppen(huidig, zet) {
   const push = el('div', 'push teken');
   push.setAttribute('role', 'group');
-  push.setAttribute('aria-label', 'Afboeken of bijstorten');
-  for (const [k, t, l] of [['af', '−', 'Afboeken'], ['bij', '+', 'Bijstorten']]) {
+  push.setAttribute('aria-label', 'Afboeken, bijstorten of vastzetten');
+  for (const [k, t, l] of TEKENS) {
     const b = el('button', null, t);
     b.type = 'button';
+    b.dataset.teken = k;
+    b.title = l;
     b.setAttribute('aria-label', l);
     b.setAttribute('aria-pressed', String(huidig === k));
     b.addEventListener('click', () => { $$('button', push).forEach(x => x.setAttribute('aria-pressed', String(x === b))); zet(k); });
@@ -2292,10 +2519,11 @@ function budgetRij(b, mk) {
   const li = el('li', 'bud'), kop = el('div', 'bud-kop'), naam = el('button', 'bud-naam');
   naam.type = 'button';
   naam.setAttribute('aria-expanded', String(ui.open.has(b.id)));
-  let sub = `${geld(st.uit / 100, main)} uitgegeven van ${geld(st.bud / 100, main)}`;
-  if (st.bij) sub += ` · ${metTeken(st.bij, true)} bijgestort`;
-  if (b.meenemen) sub += ' · rest gaat mee';
-  naam.append(icoon(budgetIcoon(b)), el('span', 'bud-t', b.naam), el('span', 'bud-sub', sub));
+  const delen = [];
+  if (st.uit) delen.push(`${geld(st.uit / 100, main)} uitgegeven`);
+  if (st.bud) delen.push(`budget ${geld(st.bud / 100, main)} per maand`);
+  naam.append(icoon(budgetIcoon(b)), el('span', 'bud-t', b.naam));
+  if (delen.length) naam.append(el('span', 'bud-sub', delen.join(' · '))); else naam.classList.add('kaal');
   naam.addEventListener('click', () => { if (ui.open.has(b.id)) ui.open.delete(b.id); else ui.open.add(b.id); renderBudget(); });
   const over = el('button', 'bud-over' + (st.over < 0 ? ' tekort' : ''), metTeken(st.over));
   over.type = 'button';
@@ -2310,20 +2538,38 @@ function budgetRij(b, mk) {
   const balk = el('div', 'bud-balk' + (st.over < 0 ? ' vol' : '')), vul = el('i'), beschikbaar = st.over + st.uit;
   vul.style.width = (beschikbaar > 0 ? Math.min(100, st.uit / beschikbaar * 100) : st.uit > 0 ? 100 : 0) + '%';
   balk.append(vul);
-  li.append(kop, balk);
+  li.append(kop);
+  if (st.bud || st.uit) li.append(balk);
   if (ui.edit === b.id) li.append(inlineAfboeken(b));
   if (ui.open.has(b.id)) li.append(historieLijst(b, mk));
   return li;
 }
-let snelSig = '';
+let snelSig = '', groepSig = '';
+function renderGroepFilter() {
+  const lijst = groepen(), sel = F('groepFilter');
+  if (state.view.groep !== 'alle' && !lijst.includes(state.view.groep)) { state.view.groep = 'alle'; bewaarView(); }
+  const sig = JSON.stringify(lijst);
+  if (sig !== groepSig) { groepSig = sig; vulSelect(sel, [['alle', 'Alle groepen'], ...lijst.map(g => [g, groepNaam(g)])]); }
+  sel.value = state.view.groep;
+  return lijst.length > 1;
+}
 function renderSnel() {
-  const sel = F('snelBudget'), sig = JSON.stringify(state.inst.budgetten.map(b => [b.id, b.naam]));
-  F('snelAf').hidden = !state.inst.budgetten.length;
+  const sel = F('snelBudget'), lijst = zichtbareBudgetten();
+  F('snelAf').hidden = !lijst.length;
+  const sig = JSON.stringify(lijst.map(b => [b.id, b.naam, groepVan(b)]));
   if (sig === snelSig) return;
-  const oud = sel.value;
+  const oud = sel.value, metGroepen = new Set(lijst.map(groepVan)).size > 1;
   snelSig = sig;
-  vulSelect(sel, state.inst.budgetten.map(b => [b.id, b.naam]));
-  const keuze = [oud, onthoud('budget')].find(id => budgetInfo(id));
+  sel.replaceChildren();
+  let og = null, g = null;
+  for (const b of lijst) {
+    const o = el('option', null, b.naam);
+    o.value = b.id;
+    if (!metGroepen) { sel.append(o); continue; }
+    if (groepVan(b) !== g) { g = groepVan(b); og = el('optgroup'); og.label = groepNaam(g); sel.append(og); }
+    og.append(o);
+  }
+  const keuze = [oud, onthoud('budget')].find(id => lijst.some(b => b.id === id));
   if (keuze) sel.value = keuze;
 }
 function renderBudget() {
@@ -2333,26 +2579,40 @@ function renderBudget() {
     const [b, n] = $$('input', oud);
     bewaar = { bid: oud.dataset.bid, b: b.value, n: n.value, focus: document.activeElement === b ? 0 : document.activeElement === n ? 1 : -1, err: $('.err', oud).textContent };
   }
+  F('groepPop').hidden = !renderGroepFilter();
   renderSnel();
   const st = F('budStatus');
   st.hidden = !ui.laatste;
   if (ui.laatste) F('budStatusTekst').textContent = ui.laatste.tekst;
   list.replaceChildren();
-  const mk = huidigeMaand(), budgetten = state.inst.budgetten;
-  if (!state.loaded) { list.append(el('li', 'empty', 'Boekje openen…')); }
-  else if (!budgetten.length) {
-    const li = el('li', 'empty');
-    const knop = el('button', 'btn', 'Nieuw budget');
+  const mk = huidigeMaand(), zicht = zichtbareBudgetten();
+  const standen = new Map(zicht.map(b => [b.id, budgetStand(b, mk)]));
+  if (!state.loaded) list.append(el('li', 'empty', 'Boekje openen…'));
+  else if (!state.inst.budgetten.length) {
+    const li = el('li', 'empty'), knop = el('button', 'btn', 'Nieuw budget');
     knop.type = 'button';
     knop.addEventListener('click', () => openBudgetten(true));
-    li.append(el('p', null, 'Nog geen budgetten. Maak er een, bijvoorbeeld Brandstof met € 100 per maand. Daarna tik je op het bedrag dat over is om er iets van af te boeken.'), knop);
+    li.append(el('p', null, 'Nog geen budgetten. Maak er een, bijvoorbeeld Brandstof met € 100 per maand, of haal je lijsten uit HandyShopper binnen via het menu, Importeren. Daarna tik je op het bedrag dat over is om er iets van af te boeken.'), knop);
     list.append(li);
+  } else {
+    const koppen = new Set(zicht.map(groepVan)).size > 1 || (zicht.length && groepVan(zicht[0]) !== '' && state.view.groep === 'alle');
+    const perGroep = new Map();
+    for (const b of zicht) perGroep.set(groepVan(b), (perGroep.get(groepVan(b)) || 0) + standen.get(b.id).over);
+    let huidig = null;
+    for (const b of zicht) {
+      if (koppen && groepVan(b) !== huidig) {
+        huidig = groepVan(b);
+        const kop = el('li', 'grp');
+        kop.append(el('span', null, groepNaam(huidig)), el('span', null, metTeken(perGroep.get(huidig))));
+        list.append(kop);
+      }
+      list.append(budgetRij(b, mk));
+    }
   }
-  else for (const b of budgetten) list.append(budgetRij(b, mk));
   let over = 0, totaal = 0;
-  for (const b of budgetten) { const s = budgetStand(b, mk); over += s.over; totaal += s.bud + s.bij; }
-  F('count').textContent = budgetten.length ? `Nog over van ${geld(totaal / 100, state.inst.valuta)}` : ' ';
-  F('sum').textContent = budgetten.length ? metTeken(over) : '';
+  for (const b of zicht) { const s = standen.get(b.id); over += s.over; totaal += s.bud + s.bij; }
+  F('count').textContent = zicht.length ? (totaal ? `Nog over van ${metTeken(totaal)}` : 'Nog over') : ' ';
+  F('sum').textContent = zicht.length ? metTeken(over) : '';
   if (bewaar && ui.edit === bewaar.bid) {
     const f = list.querySelector('.bud-in');
     if (f) {
@@ -2364,14 +2624,8 @@ function renderBudget() {
     }
   }
 }
-(() => {
-  const push = $('#snelAf .teken');
-  $$('button', push).forEach(b => b.addEventListener('click', () => {
-    ui.snelTeken = b.dataset.teken;
-    $$('button', push).forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    F('snelBedrag').focus();
-  }));
-})();
+F('groepFilter').addEventListener('change', e => { state.view.groep = e.target.value; ui.edit = null; bewaarView(); renderBudget(); });
+F('snelTeken').append(tekenKnoppen('af', k => { ui.snelTeken = k; F('snelBedrag').focus(); }));
 F('snelAf').addEventListener('submit', async e => {
   e.preventDefault();
   const knop = $('#snelAf button[type="submit"]');
@@ -2382,7 +2636,7 @@ F('snelAf').addEventListener('submit', async e => {
     F('snelBedrag').value = '';
     F('snelNotitie').value = '';
     ui.snelTeken = 'af';
-    $$('#snelAf .teken button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.teken === 'af')));
+    $$('#snelTeken button').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.teken === 'af')));
     renderBudget();
   }
 });
@@ -2397,15 +2651,18 @@ F('budUndo').addEventListener('click', async () => {
 });
 
 /* budget editor */
-let budDraft = [];
-function nieuwBudget() { return { id: 'b' + Date.now().toString(36), naam: '', bedragTekst: '', soort: '', meenemen: false, start: vandaag().slice(0, 7) }; }
+let budDraft = [], budScope = 'alle';
+function nieuwBudget() {
+  return { id: 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), naam: '', bedragTekst: '', groep: budScope === 'alle' ? '' : budScope, soort: '', meenemen: false, start: vandaag().slice(0, 7) };
+}
 function renderBudEdit() {
   const ul = F('budEdit');
   ul.replaceChildren();
+  F('budGroepen').replaceChildren(...groepen().filter(Boolean).map(g => { const o = el('option'); o.value = g; return o; }));
   if (!budDraft.length) ul.append(el('li', 'hint', 'Nog geen budgetten.'));
   budDraft.forEach((b, i) => {
     const li = el('li'), r1 = el('div', 'r'), r2 = el('div', 'r');
-    const naam = el('input'), bedrag = el('input'), x = el('button', 'x', '×');
+    const naam = el('input'), bedrag = el('input'), groep = el('input'), x = el('button', 'x', '×');
     naam.id = 'budn-' + b.id; naam.className = 'naam'; naam.value = b.naam; naam.maxLength = 30; naam.autocomplete = 'off'; naam.placeholder = 'Naam, bijv. Brandstof';
     naam.setAttribute('aria-label', `Naam van budget ${i + 1}`);
     naam.addEventListener('input', () => { b.naam = naam.value; });
@@ -2416,6 +2673,10 @@ function renderBudEdit() {
     x.setAttribute('aria-label', `Verwijder ${b.naam || 'budget'}`);
     x.addEventListener('click', () => { budDraft.splice(i, 1); renderBudEdit(); });
     r1.append(naam, bedrag, el('span', null, 'per maand'), x);
+    groep.id = 'budg-' + b.id; groep.className = 'groep'; groep.value = b.groep; groep.maxLength = 30; groep.autocomplete = 'off'; groep.placeholder = 'Groep, bijv. Vaste lasten';
+    groep.setAttribute('list', 'budGroepen');
+    groep.setAttribute('aria-label', `Groep van ${b.naam || 'budget ' + (i + 1)}`);
+    groep.addEventListener('input', () => { b.groep = groep.value; });
     const pop = el('span', 'popup'), sel = el('select'), lab = el('label', 'chk'), cb = el('input');
     sel.id = 'buds-' + b.id;
     sel.setAttribute('aria-label', 'Soort die vanzelf in dit budget komt');
@@ -2429,22 +2690,23 @@ function renderBudEdit() {
     cb.type = 'checkbox'; cb.id = 'budm-' + b.id; cb.checked = b.meenemen;
     cb.addEventListener('change', () => { b.meenemen = cb.checked; });
     lab.append(cb, el('span', null, 'Rest mee naar volgende maand'));
-    r2.append(pop, lab);
+    r2.append(groep, pop, lab);
     li.append(r1, r2);
     ul.append(li);
   });
-  F('budNieuw').disabled = budDraft.length >= MAX_BUD;
+  F('budNieuw').disabled = state.inst.budgetten.filter(b => !inGroep(b, budScope)).length + budDraft.length >= MAX_BUD;
 }
 function openBudgetten(nieuw) {
-  budDraft = state.inst.budgetten.map(b => ({ ...b, bedragTekst: invoer(b.bedrag) }));
-  if (nieuw && budDraft.length < MAX_BUD) budDraft.push(nieuwBudget());
+  budScope = state.view.scherm === 'budget' ? state.view.groep : 'alle';
+  budDraft = state.inst.budgetten.filter(b => inGroep(b, budScope)).sort(opBudget).map(b => ({ ...b, bedragTekst: invoer(b.bedrag) }));
+  if (nieuw) budDraft.push(nieuwBudget());
+  F('budTitle').textContent = budScope === 'alle' ? 'Budgetten' : `Budgetten · ${groepNaam(budScope)}`;
   F('budErr').textContent = '';
   renderBudEdit();
   F('dlgBud').showModal();
   if (nieuw) { const inputs = $$('#budEdit .naam'); inputs[inputs.length - 1]?.focus(); }
 }
 F('budNieuw').addEventListener('click', () => {
-  if (budDraft.length >= MAX_BUD) return;
   budDraft.push(nieuwBudget());
   renderBudEdit();
   const inputs = $$('#budEdit .naam');
@@ -2452,13 +2714,17 @@ F('budNieuw').addEventListener('click', () => {
 });
 F('formBud').addEventListener('submit', async e => {
   e.preventDefault();
-  const namen = budDraft.map(b => b.naam.trim());
+  const buiten = state.inst.budgetten.filter(b => !inGroep(b, budScope));
+  const namen = budDraft.map(b => b.naam.trim()), groepenD = budDraft.map(b => b.groep.trim());
   if (namen.some(n => !n)) { F('budErr').textContent = 'Geef elk budget een naam, of verwijder het.'; return; }
-  if (new Set(namen.map(n => n.toLowerCase())).size !== namen.length) { F('budErr').textContent = 'Twee budgetten hebben dezelfde naam.'; return; }
+  const sleutels = [...buiten.map(b => (groepVan(b) + '|' + b.naam).toLowerCase()), ...namen.map((n, i) => (groepenD[i] + '|' + n).toLowerCase())];
+  const dubbel = sleutels.find((k, i) => sleutels.indexOf(k) !== i);
+  if (dubbel) { const [g, n] = dubbel.split('|'); F('budErr').textContent = `Er staan twee budgetten ${n} in ${g ? 'de groep ' + g : 'geen groep'}. Geef er een een andere naam of groep.`; return; }
+  if (buiten.length + budDraft.length > MAX_BUD) { F('budErr').textContent = `Er passen maximaal ${MAX_BUD} budgetten in het boekje.`; return; }
   const bedragen = budDraft.map(b => parseGetal(b.bedragTekst || '0'));
   const fout1 = bedragen.findIndex(n => !(n >= 0));
   if (fout1 > -1) { F('budErr').textContent = `Vul bij ${namen[fout1]} een bedrag per maand in, bijvoorbeeld 100.`; F('budb-' + budDraft[fout1].id).focus(); return; }
-  const weg = state.inst.budgetten.filter(b => !budDraft.some(d => d.id === b.id)).map(b => b.id);
+  const weg = state.inst.budgetten.filter(b => inGroep(b, budScope) && !budDraft.some(d => d.id === b.id)).map(b => b.id);
   const posten = state.posten.filter(p => weg.includes(p.budget)), stortingen = state.stortingen.filter(s => weg.includes(s.budget));
   if (posten.length || stortingen.length) {
     const delen = [];
@@ -2468,7 +2734,8 @@ F('formBud').addEventListener('submit', async e => {
     if (!ok) return;
   }
   try {
-    await store.zetInst({ ...state.inst, budgetten: budDraft.map((b, i) => ({ id: b.id, naam: namen[i], bedrag: round2(bedragen[i]), soort: b.soort, meenemen: b.meenemen, start: b.start || vandaag().slice(0, 7) })) });
+    const nieuw = budDraft.map((b, i) => ({ id: b.id, naam: namen[i], groep: groepenD[i], bedrag: round2(bedragen[i]), soort: b.soort, meenemen: b.meenemen, start: b.start || vandaag().slice(0, 7) }));
+    await store.zetInst({ ...state.inst, budgetten: [...buiten, ...nieuw] });
     await schrijfPosten(posten.map(p => ({ id: p.id, data: naarData({ ...p, budget: '' }) })));
     for (const s of stortingen) await metBackoff(() => store.wisStorting(s.id));
     F('dlgBud').close();
@@ -2479,9 +2746,9 @@ F('formBud').addEventListener('submit', async e => {
 /* history */
 function renderHistorie() {
   const mk = huidigeMaand(), rows = [];
-  for (const b of state.inst.budgetten) for (const m of mutaties(b.id, mk)) rows.push({ ...m, budget: b });
+  for (const b of zichtbareBudgetten()) for (const m of mutaties(b.id, mk)) rows.push({ ...m, budget: b });
   rows.sort((a, b) => b.datum.localeCompare(a.datum) || (b.aangemaakt || '').localeCompare(a.aangemaakt || ''));
-  F('histSub').textContent = `${cap(MAANDEN[state.view.m - 1])} ${state.view.y} · alle budgetten`;
+  F('histSub').textContent = `${cap(MAANDEN[state.view.m - 1])} ${state.view.y} · ${state.view.groep === 'alle' ? 'alle budgetten' : groepNaam(state.view.groep)}`;
   const t = F('histTabel');
   t.replaceChildren();
   const thead = el('thead'), hr = el('tr');
@@ -2489,10 +2756,11 @@ function renderHistorie() {
   thead.append(hr);
   const tbody = el('tbody');
   if (!rows.length) { const tr = el('tr'), td = el('td', 'leeg', 'Deze maand is er nog niets afgeboekt of bijgestort.'); td.colSpan = 4; tr.append(td); tbody.append(tr); }
+  const metGroep = state.view.groep === 'alle' && groepen().length > 1;
   for (const m of rows) {
     const tr = el('tr', 'klik');
     tr.tabIndex = 0;
-    [datumKort(m.datum), m.budget.naam, m.tekst, { t: metTeken(m.bedrag, true), n: true }].forEach(c => tr.append(cel('td', c)));
+    [datumKort(m.datum), metGroep && groepVan(m.budget) ? { t: m.budget.naam, klein: m.budget.groep } : m.budget.naam, m.tekst, { t: metTeken(m.bedrag, true), n: true }].forEach(c => tr.append(cel('td', c)));
     const open = () => m.soort === 'post' ? openPost(m.id) : vraagWisStorting(m, m.budget);
     tr.addEventListener('click', open);
     tr.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
@@ -2501,7 +2769,7 @@ function renderHistorie() {
   t.append(thead, tbody);
   const af = rows.filter(m => m.bedrag < 0).reduce((a, m) => a - m.bedrag, 0), bij = rows.filter(m => m.bedrag > 0).reduce((a, m) => a + m.bedrag, 0);
   let over = 0;
-  for (const b of state.inst.budgetten) over += budgetStand(b, mk).over;
+  for (const b of zichtbareBudgetten()) over += budgetStand(b, mk).over;
   F('histNoot').textContent = rows.length ? `Afgeboekt: ${metTeken(-af)} · Bijgestort: ${metTeken(bij, true)} · Nog over: ${metTeken(over)}. Tik op een regel om hem te bekijken of te wijzigen.` : '';
 }
 function openHistorie() { renderHistorie(); F('dlgHist').showModal(); }
@@ -2518,7 +2786,7 @@ function openInfo() {
   const waar = LOKAAL
     ? 'Je gegevens staan alleen in deze browser op dit apparaat. Maak af en toe een backup (menu, Backup maken); met die backup zet je alles ook over naar een ander apparaat.'
     : 'Je posten worden in dit artifact bewaard; iedereen met wie je het deelt, kan ze zien.';
-  ask({ title: 'Info', icon: 'i', msg: 'Onkostenboekje Plus houdt je uitgaven bij, zoals Onkosten (Expense) en ExpensePlus op de Palm-PDA: invoer met icoontjes, budgetten waar je snel van afboekt, rapporten per week of declaratie, ritten met kilometerstanden, bonnetjes en wisselkoersen. ' + waar });
+  ask({ title: 'Info', icon: 'i', msg: 'Onkostenboekje Plus houdt je uitgaven bij, zoals HandyShopper, Onkosten (Expense) en ExpensePlus op de Palm-PDA: invoer met icoontjes, budgetten waar je snel van afboekt, rapporten per week of declaratie, ritten met kilometerstanden, bonnetjes en wisselkoersen. ' + waar });
 }
 
 /* ---------- backup ---------- */
